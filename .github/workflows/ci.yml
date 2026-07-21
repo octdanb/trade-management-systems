@@ -1,10 +1,20 @@
 name: CI
 
+# Every branch push runs checks and builds+pushes images tagged with the
+# branch name. Versioned releases are driven by branch name: pushing a
+# branch called release/X.Y.Z additionally tags the images X.Y.Z (and
+# latest on the default branch), creates the git tag vX.Y.Z, and publishes
+# a GitHub Release with generated notes. Pushing a vX.Y.Z tag directly
+# also produces semver-tagged images.
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     tags: ["v*"]
   pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
@@ -50,9 +60,31 @@ jobs:
       - name: Typecheck and build
         run: npm run build
 
+  # Derive a semver from a release/X.Y.Z branch name (empty otherwise).
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.derive.outputs.version }}
+    steps:
+      - name: Derive version from branch name
+        id: derive
+        run: |
+          if [[ "$GITHUB_REF" == refs/heads/release/* ]]; then
+            v="${GITHUB_REF_NAME#release/}"
+            if [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
+              echo "version=$v" >> "$GITHUB_OUTPUT"
+              echo "Release version: $v"
+            else
+              echo "::error::Branch '$GITHUB_REF_NAME' is not release/X.Y.Z — can't derive a version."
+              exit 1
+            fi
+          else
+            echo "Not a release branch; no version derived."
+          fi
+
   build-images:
-    # Build (and on main/tags, push) production images for both services.
-    needs: [backend-checks, frontend-checks]
+    # Build (and on push events, publish) production images for both services.
+    needs: [backend-checks, frontend-checks, version]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -80,6 +112,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=sha
+            type=raw,value=${{ needs.version.outputs.version }},enable=${{ needs.version.outputs.version != '' }}
+            type=raw,value=latest,enable={{is_default_branch}}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -90,3 +124,32 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,scope=${{ matrix.service }},mode=max
+
+  # Pushing release/X.Y.Z publishes git tag vX.Y.Z + a GitHub Release
+  # (idempotent — re-pushing the branch after a fix won't duplicate it).
+  release:
+    if: startsWith(github.ref, 'refs/heads/release/')
+    needs: [version, build-images]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          tag="v${VERSION}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $tag already exists — skipping."
+            exit 0
+          fi
+          gh release create "$tag" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$tag" \
+            --generate-notes \
+            --notes "Images:
+          - \`ghcr.io/${GITHUB_REPOSITORY}/backend:${VERSION}\`
+          - \`ghcr.io/${GITHUB_REPOSITORY}/frontend:${VERSION}\`"

@@ -161,15 +161,28 @@ and `signup.tsx`. Email verification is disabled for prototyping
 A Google sign-in with a new email auto-creates the account
 (`EMAIL_AUTHENTICATION = True`), and one matching an existing email links to it.
 
-## CI / production images
+## CI / versioning / releases
 
-`.github/workflows/ci.yml` lints both apps on every push/PR, then builds the
-production Docker images (multi-stage `prod` targets) and pushes them to GHCR
-on pushes to `main` and version tags:
+`.github/workflows/ci.yml` runs on every branch push: lint + tests for both
+apps, then Docker builds of the production images (multi-stage `prod`
+targets), pushed to GHCR:
 
 - `ghcr.io/<owner>/<repo>/backend` — gunicorn + whitenoise
 - `ghcr.io/<owner>/<repo>/frontend` — nginx serving the built SPA, proxying
   API routes to `$BACKEND_ORIGIN`
+
+Image tags are driven by the git ref:
+
+| You push…                  | Images get tagged…                            |
+| -------------------------- | --------------------------------------------- |
+| any branch                 | `<branch-name>` (slashes → dashes), `sha-<short>` |
+| the default branch         | additionally `latest`                          |
+| a branch `release/X.Y.Z`   | additionally `X.Y.Z`, plus CI creates git tag `vX.Y.Z` and a **GitHub Release** with generated notes |
+| a tag `vX.Y.Z` directly    | `X.Y.Z`                                        |
+
+So cutting a release is: `git checkout -b release/1.2.0 && git push -u origin
+release/1.2.0`. The release job is idempotent — re-pushing the branch after a
+fix won't duplicate the release (delete the release + tag first to re-cut).
 
 Production env vars the backend expects: `DJANGO_SECRET_KEY`,
 `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`,
