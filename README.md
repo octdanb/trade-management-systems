@@ -196,6 +196,12 @@ targets), pushed to GHCR:
 - `ghcr.io/<owner>/<repo>/frontend` — nginx serving the built SPA, proxying
   API routes to `$BACKEND_ORIGIN`
 
+A separate `Audit` workflow runs dependency-vulnerability scans on every push
+and weekly: `pip-audit` over the locked backend dependencies (PyPA advisory
+DB) and `pnpm audit --prod --audit-level high` for the frontend and mobile
+apps. It's deliberately not a gate for image builds — a red audit means "bump
+that dependency", not "the build is broken".
+
 Image tags are driven by the git ref:
 
 | You push…                  | Images get tagged…                            |

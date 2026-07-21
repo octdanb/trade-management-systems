@@ -1,0 +1,55 @@
+name: Audit
+
+# Dependency vulnerability audits for every push, plus a weekly sweep so new
+# CVEs surface even when nothing is being pushed. Kept separate from CI so a
+# fresh upstream advisory never blocks image builds — treat a red audit as a
+# prompt to bump the dependency.
+on:
+  push:
+    branches: ["**"]
+  schedule:
+    - cron: "0 18 * * 1" # Mondays 18:00 UTC (Tuesday morning NZ)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Export locked production dependencies
+        run: uv export --frozen --no-dev --format requirements-txt > audit-requirements.txt
+      - name: pip-audit (PyPA advisory database)
+        run: uvx pip-audit --no-deps -r audit-requirements.txt
+
+  frontend-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+      - name: pnpm audit (runtime deps, high+)
+        run: pnpm audit --prod --audit-level high
+
+  mobile-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: mobile/package.json
+      - name: pnpm audit (runtime deps, high+)
+        run: pnpm audit --prod --audit-level high
