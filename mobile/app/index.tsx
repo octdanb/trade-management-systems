@@ -13,5 +13,5 @@ export default function Index() {
       </View>
     )
   }
-  return <Redirect href={session.data ? '/home' : '/login'} />
+  return <Redirect href={session.data ? '/(tabs)/today' : '/login'} />
 }

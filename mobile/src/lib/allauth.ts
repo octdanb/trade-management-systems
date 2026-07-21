@@ -73,6 +73,15 @@ export async function logout() {
   }
 }
 
+export async function requestPasswordReset(email: string) {
+  await allauth.post('/auth/password/request', { email })
+}
+
+/** Change (or set, for social-only accounts) the password. */
+export async function changePassword(payload: { current_password?: string; new_password: string }) {
+  await allauth.post('/account/password/change', payload)
+}
+
 export function allauthErrorMessage(error: unknown): string {
   if (isAxiosError(error)) {
     const errors = (error.response?.data as { errors?: { message: string }[] } | undefined)?.errors

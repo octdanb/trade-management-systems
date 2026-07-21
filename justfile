@@ -51,9 +51,11 @@ schema:
     docker compose run --rm backend uv run python manage.py export_openapi_schema --api config.api.api --output /app/openapi.json
     mv backend/openapi.json frontend/openapi.json
 
-# Regenerate the typed API client + TanStack Query hooks (schema + kubb)
+# Regenerate the typed API clients + TanStack Query hooks (schema + kubb,
+# for both frontend and mobile)
 codegen: schema
     docker compose run --rm frontend pnpm exec kubb generate
+    cd mobile && pnpm exec kubb generate
 
 # Run the backend test suite
 test:

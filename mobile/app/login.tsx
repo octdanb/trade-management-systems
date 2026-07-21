@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { useLogin, useSignup } from '../src/hooks/use-auth'
@@ -17,7 +17,7 @@ export default function LoginScreen() {
   const active = mode === 'login' ? loginMutation : signupMutation
 
   function submit() {
-    active.mutate({ email, password }, { onSuccess: () => router.replace('/home') })
+    active.mutate({ email, password }, { onSuccess: () => router.replace('/(tabs)/today') })
   }
 
   return (
@@ -64,7 +64,13 @@ export default function LoginScreen() {
         </Pressable>
 
         <Pressable
-          className="mt-4 items-center py-2"
+          className="mt-3 items-center py-1"
+          onPress={() => router.push('/forgot-password')}
+        >
+          <Text className="text-sm text-muted-foreground">Forgot password?</Text>
+        </Pressable>
+        <Pressable
+          className="mt-1 items-center py-2"
           onPress={() => setMode(mode === 'login' ? 'signup' : 'login')}
         >
           <Text className="text-sm text-muted-foreground">

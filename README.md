@@ -172,8 +172,17 @@ EXPO_PUBLIC_API_URL=http://<your-lan-ip>:8000 pnpm start
 ```
 
 then open in Expo Go / a simulator. `pnpm lint` (Biome) and `pnpm typecheck`
-mirror CI. Screens live in `mobile/app/` (file-based routing); the API/auth
-clients in `mobile/src/lib/` mirror the web app's.
+mirror CI.
+
+The mobile app replicates the webapp (minus the marketing pages): Today
+(route optimization, reorder, done/skip/paid, Google Maps handoff), Schedule
+(agenda with one-off/repeating creation and per-visit editing), Clients
+(search/create/edit, series management, geocode retry), Equipment (photos via
+the camera roll, service logging, tap-to-call servicing contact), Settings
+(business/home base, change password, sign out) and Notifications (reminders
++ check-now). Screens live in `mobile/app/` (file-based routing); the typed
+API hooks in `mobile/src/gen/` are kubb-generated from the same OpenAPI
+schema as the web app (`just codegen` regenerates both).
 
 ### Google login
 
