@@ -1,0 +1,20 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Django-owned routes
+    location ~ ^/(api|_allauth|accounts|admin|static)/ {
+        proxy_pass ${BACKEND_ORIGIN};
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # SPA fallback
+    location / {
+        try_files $uri /index.html;
+    }
+}
