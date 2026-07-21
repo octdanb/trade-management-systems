@@ -64,16 +64,31 @@ export function ClientForm({
     >
       <div className="grid gap-2">
         <Label htmlFor="cf-name">Name</Label>
-        <Input id="cf-name" required value={values.name} onChange={(e) => set('name', e.target.value)} />
+        <Input
+          id="cf-name"
+          required
+          value={values.name}
+          onChange={(e) => set('name', e.target.value)}
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="cf-phone">Phone</Label>
-          <Input id="cf-phone" type="tel" value={values.phone} onChange={(e) => set('phone', e.target.value)} />
+          <Input
+            id="cf-phone"
+            type="tel"
+            value={values.phone}
+            onChange={(e) => set('phone', e.target.value)}
+          />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="cf-email">Email</Label>
-          <Input id="cf-email" type="email" value={values.email} onChange={(e) => set('email', e.target.value)} />
+          <Input
+            id="cf-email"
+            type="email"
+            value={values.email}
+            onChange={(e) => set('email', e.target.value)}
+          />
         </div>
       </div>
       <div className="grid gap-2">
@@ -120,7 +135,11 @@ export function ClientForm({
         />
       </div>
       <div className="flex items-center gap-2">
-        <Switch id="cf-active" checked={values.is_active} onCheckedChange={(v) => set('is_active', v)} />
+        <Switch
+          id="cf-active"
+          checked={values.is_active}
+          onCheckedChange={(v) => set('is_active', v)}
+        />
         <Label htmlFor="cf-active">Active client</Label>
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}

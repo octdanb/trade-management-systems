@@ -86,10 +86,7 @@ export async function logout() {
  * Change (or, for social-only accounts without one, set) the password.
  * `currentPassword` is required only when the account already has one.
  */
-export async function changePassword(payload: {
-  current_password?: string
-  new_password: string
-}) {
+export async function changePassword(payload: { current_password?: string; new_password: string }) {
   await axiosInstance.post(`${BASE}/account/password/change`, payload)
 }
 

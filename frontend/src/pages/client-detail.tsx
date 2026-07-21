@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, CalendarPlus, MapPin, MapPinOff } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { ClientForm, clientToFormValues } from '@/components/client-form'
@@ -15,7 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { JOBS_BASE_KEY } from '@/lib/query-keys'
 import {
   getClientQueryKey,
   listClientsQueryKey,
@@ -27,6 +26,7 @@ import {
   useListSeries,
   useUpdateClient,
 } from '@/gen'
+import { JOBS_BASE_KEY } from '@/lib/query-keys'
 
 export function ClientDetailPage() {
   const { id } = useParams()

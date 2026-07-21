@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -26,8 +26,8 @@ export function ForgotPasswordPage() {
           {request.isSuccess ? (
             <>
               <p className="text-sm">
-                If an account exists for <span className="font-medium">{email}</span>, a reset
-                link is on its way. Check your inbox.
+                If an account exists for <span className="font-medium">{email}</span>, a reset link
+                is on its way. Check your inbox.
               </p>
               <Button asChild variant="outline">
                 <Link to="/login">Back to sign in</Link>
@@ -114,8 +114,8 @@ export function ResetPasswordPage() {
               </div>
               {reset.isError && (
                 <p className="text-sm text-destructive">
-                  {allauthErrorMessage(reset.error)} The link may have expired — request a new
-                  one from the sign-in page.
+                  {allauthErrorMessage(reset.error)} The link may have expired — request a new one
+                  from the sign-in page.
                 </p>
               )}
               <Button type="submit" disabled={reset.isPending}>

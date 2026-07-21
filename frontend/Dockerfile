@@ -5,28 +5,32 @@
 # ---------------------------------------------------------------------------
 FROM node:22-slim AS dev
 
+RUN corepack enable
+
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "dev", "--host"]
 
 # ---------------------------------------------------------------------------
 # prod: static build served by nginx, proxying API routes to the backend
 # ---------------------------------------------------------------------------
 FROM node:22-slim AS prod-builder
 
+RUN corepack enable
+
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN npm run build
+RUN pnpm build
 
 FROM nginx:1.27-alpine AS prod
 

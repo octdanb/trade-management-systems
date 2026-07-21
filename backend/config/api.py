@@ -7,11 +7,13 @@ from core.api_equipment import router as equipment_router
 from core.api_notifications import router as notifications_router
 from core.api_route import router as route_router
 from core.api_schedule import router as schedule_router
+from core.auth import AccessTokenAuth
 
+# Auth is an OR: session cookie (web SPA) or Bearer access token (mobile).
 api = NinjaAPI(
     title="Trade Management API",
     version="0.1.0",
-    auth=django_auth,
+    auth=[django_auth, AccessTokenAuth()],
     docs_url="/docs",
 )
 

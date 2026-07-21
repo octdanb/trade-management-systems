@@ -240,8 +240,12 @@ export function LandingPage() {
         <section id="how-it-works" className="border-t">
           <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Up and running today</h2>
-              <p className="mt-3 text-muted-foreground">Three steps between you and a tidier week.</p>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Up and running today
+              </h2>
+              <p className="mt-3 text-muted-foreground">
+                Three steps between you and a tidier week.
+              </p>
             </div>
             <ol className="mt-12 grid gap-8 sm:grid-cols-3">
               {STEPS.map((step, index) => (

@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 
 import { SeriesForm } from '@/components/series-form'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import {
+  type JobOut,
+  type JobStatus,
   jobStatusEnum,
   useCreateJob,
   useCreateSeries,
@@ -29,8 +31,6 @@ import {
   useListClients,
   useUpdateJob,
   useUpdateSeries,
-  type JobOut,
-  type JobStatus,
 } from '@/gen'
 import { JOBS_BASE_KEY } from '@/lib/query-keys'
 
@@ -143,7 +143,12 @@ export function CreateJobDialog({
             >
               <div className="grid gap-2">
                 <Label htmlFor="jd-time">Time (optional)</Label>
-                <Input id="jd-time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                <Input
+                  id="jd-time"
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                />
               </div>
               {createJob.isError && (
                 <p className="text-sm text-destructive">Could not create the appointment.</p>
@@ -231,11 +236,22 @@ export function EditJobDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="ej-date">Date</Label>
-              <Input id="ej-date" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
+              <Input
+                id="ej-date"
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="ej-time">Time</Label>
-              <Input id="ej-time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+              <Input
+                id="ej-time"
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+              />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">

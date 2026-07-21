@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { frequencyEnum, type Frequency, type SeriesOut } from '@/gen'
+import { type Frequency, frequencyEnum, type SeriesOut } from '@/gen'
 
 export const FREQUENCY_LABELS: Record<Frequency, string> = {
   [frequencyEnum.weekly]: 'Weekly',

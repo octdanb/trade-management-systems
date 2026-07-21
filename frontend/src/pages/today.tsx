@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   ArrowDown,
@@ -10,6 +9,7 @@ import {
   RotateCcw,
   Route,
 } from 'lucide-react'
+import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -17,11 +17,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
   jobStatusEnum,
+  type RouteStopOut,
   useGetRoutePlan,
   useOptimizeRoute,
   useReorderRoute,
   useUpdateJob,
-  type RouteStopOut,
 } from '@/gen'
 import { formatDuration, googleMapsDirectionsUrl } from '@/lib/maps'
 import { JOBS_BASE_KEY, ROUTE_BASE_KEY } from '@/lib/query-keys'
@@ -78,7 +78,12 @@ export function TodayPage() {
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <Button variant="outline" size="icon" aria-label="Back to today" onClick={() => setDate(todayString())}>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Back to today"
+            onClick={() => setDate(todayString())}
+          >
             <RotateCcw />
           </Button>
         </div>
@@ -147,7 +152,9 @@ export function TodayPage() {
                   key={stop.id}
                   stop={stop}
                   onSetStatus={(status) => updateJob.mutate({ job_id: stop.id, data: { status } })}
-                  onTogglePaid={() => updateJob.mutate({ job_id: stop.id, data: { paid: !stop.paid } })}
+                  onTogglePaid={() =>
+                    updateJob.mutate({ job_id: stop.id, data: { paid: !stop.paid } })
+                  }
                 />
               ))}
             </>
@@ -209,10 +216,24 @@ function StopCard({
         <div className="flex items-center gap-1">
           {onMoveUp || onMoveDown ? (
             <div className="flex flex-col">
-              <Button variant="ghost" size="icon" className="size-6" disabled={!onMoveUp} onClick={onMoveUp} aria-label="Move up">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-6"
+                disabled={!onMoveUp}
+                onClick={onMoveUp}
+                aria-label="Move up"
+              >
                 <ArrowUp className="size-3.5" />
               </Button>
-              <Button variant="ghost" size="icon" className="size-6" disabled={!onMoveDown} onClick={onMoveDown} aria-label="Move down">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-6"
+                disabled={!onMoveDown}
+                onClick={onMoveDown}
+                aria-label="Move down"
+              >
                 <ArrowDown className="size-3.5" />
               </Button>
             </div>

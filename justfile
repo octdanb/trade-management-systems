@@ -53,7 +53,7 @@ schema:
 
 # Regenerate the typed API client + TanStack Query hooks (schema + kubb)
 codegen: schema
-    docker compose run --rm frontend npx kubb generate
+    docker compose run --rm frontend pnpm exec kubb generate
 
 # Run the backend test suite
 test:
@@ -63,7 +63,8 @@ test:
 lint:
     docker compose run --rm backend uv run ruff check .
     docker compose run --rm backend uv run ruff format --check .
-    docker compose run --rm frontend npx tsc -b
+    docker compose run --rm frontend pnpm lint
+    docker compose run --rm frontend pnpm exec tsc -b
 
 # Run Django system checks and verify migrations are up to date
 check:

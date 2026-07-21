@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { MapPinOff, Plus } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ClientForm } from '@/components/client-form'
@@ -83,7 +83,10 @@ export function ClientsPage() {
                   <span className="inline-flex items-center gap-1">
                     {client.address || '—'}
                     {client.address && client.geocode_status === 'failed' && (
-                      <MapPinOff className="size-3.5 text-destructive" aria-label="Geocoding failed" />
+                      <MapPinOff
+                        className="size-3.5 text-destructive"
+                        aria-label="Geocoding failed"
+                      />
                     )}
                   </span>
                 </TableCell>
@@ -115,7 +118,11 @@ export function ClientsPage() {
           <ClientForm
             submitLabel="Create client"
             pending={createClient.isPending}
-            error={createClient.isError ? 'Could not create the client. Check the fields and try again.' : null}
+            error={
+              createClient.isError
+                ? 'Could not create the client. Check the fields and try again.'
+                : null
+            }
             onSubmit={(data) => createClient.mutate({ data })}
           />
         </DialogContent>

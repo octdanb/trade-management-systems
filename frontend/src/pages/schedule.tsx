@@ -1,14 +1,14 @@
-import { useMemo, useState } from 'react'
-import type { DateClickArg } from '@fullcalendar/interaction'
+import type { EventClickArg, EventDropArg, EventInput } from '@fullcalendar/core'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import type { DateClickArg } from '@fullcalendar/interaction'
 import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import type { EventClickArg, EventDropArg, EventInput } from '@fullcalendar/core'
 import { useQueryClient } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
 
 import { CreateJobDialog, EditJobDialog, EditSeriesDialog } from '@/components/job-dialog'
-import { useListJobs, useUpdateJob, type JobOut } from '@/gen'
+import { type JobOut, useListJobs, useUpdateJob } from '@/gen'
 import { JOBS_BASE_KEY } from '@/lib/query-keys'
 
 function toDateString(d: Date): string {
@@ -102,7 +102,9 @@ export function SchedulePage() {
           editable
           dayMaxEventRows={4}
           events={events}
-          datesSet={(arg) => setRange({ start: toDateString(arg.start), end: toDateString(arg.end) })}
+          datesSet={(arg) =>
+            setRange({ start: toDateString(arg.start), end: toDateString(arg.end) })
+          }
           eventDrop={onEventDrop}
           eventClick={onEventClick}
           dateClick={onDateClick}

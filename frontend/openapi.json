@@ -1,1 +1,1574 @@
-{"openapi": "3.1.0", "info": {"title": "Trade Management API", "version": "0.1.0", "description": ""}, "paths": {"/api/health": {"get": {"operationId": "health", "summary": "Health", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HealthOut"}}}}}, "description": "Liveness check. Also ensures the CSRF cookie is set for the SPA."}}, "/api/me": {"get": {"operationId": "getMe", "summary": "Me", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserOut"}}}}}, "security": [{"SessionAuth": []}]}}, "/api/clients": {"get": {"operationId": "listClients", "summary": "List Clients", "parameters": [{"in": "query", "name": "active", "schema": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Active"}, "required": false}, {"in": "query", "name": "search", "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Search"}, "required": false}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/ClientOut"}, "title": "Response", "type": "array"}}}}}, "tags": ["clients"], "security": [{"SessionAuth": []}]}, "post": {"operationId": "createClient", "summary": "Create Client", "parameters": [], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClientOut"}}}}}, "tags": ["clients"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClientIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/clients/{client_id}": {"get": {"operationId": "getClient", "summary": "Get Client", "parameters": [{"in": "path", "name": "client_id", "schema": {"title": "Client Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClientOut"}}}}}, "tags": ["clients"], "security": [{"SessionAuth": []}]}, "put": {"operationId": "updateClient", "summary": "Update Client", "parameters": [{"in": "path", "name": "client_id", "schema": {"title": "Client Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClientOut"}}}}}, "tags": ["clients"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClientIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}, "delete": {"operationId": "deleteClient", "summary": "Delete Client", "parameters": [{"in": "path", "name": "client_id", "schema": {"title": "Client Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "tags": ["clients"], "security": [{"SessionAuth": []}]}}, "/api/clients/{client_id}/geocode": {"post": {"operationId": "geocodeClient", "summary": "Geocode Client Retry", "parameters": [{"in": "path", "name": "client_id", "schema": {"title": "Client Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClientOut"}}}}}, "tags": ["clients"], "security": [{"SessionAuth": []}]}}, "/api/profile": {"get": {"operationId": "getProfile", "summary": "Get Profile", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProfileOut"}}}}}, "tags": ["clients"], "security": [{"SessionAuth": []}]}, "put": {"operationId": "updateProfile", "summary": "Update Profile", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProfileOut"}}}}}, "tags": ["clients"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProfileIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/series": {"get": {"operationId": "listSeries", "summary": "List Series", "parameters": [{"in": "query", "name": "client_id", "schema": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Client Id"}, "required": false}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/SeriesOut"}, "title": "Response", "type": "array"}}}}}, "tags": ["schedule"], "security": [{"SessionAuth": []}]}, "post": {"operationId": "createSeries", "summary": "Create Series", "parameters": [], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SeriesOut"}}}}}, "tags": ["schedule"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SeriesIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/series/{series_id}": {"put": {"operationId": "updateSeries", "summary": "Update Series", "parameters": [{"in": "path", "name": "series_id", "schema": {"title": "Series Id", "type": "integer"}, "required": true}, {"in": "query", "name": "apply_from", "schema": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Apply From"}, "required": false}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SeriesOut"}}}}}, "tags": ["schedule"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SeriesUpdateIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}, "delete": {"operationId": "deleteSeries", "summary": "Delete Series", "parameters": [{"in": "path", "name": "series_id", "schema": {"title": "Series Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "description": "Delete a series and all of its occurrences (including history).", "tags": ["schedule"], "security": [{"SessionAuth": []}]}}, "/api/series/{series_id}/end": {"post": {"operationId": "endSeries", "summary": "End Series", "parameters": [{"in": "path", "name": "series_id", "schema": {"title": "Series Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SeriesOut"}}}}}, "tags": ["schedule"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SeriesEndIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/jobs": {"get": {"operationId": "listJobs", "summary": "List Jobs", "parameters": [{"in": "query", "name": "start", "schema": {"format": "date", "title": "Start", "type": "string"}, "required": true}, {"in": "query", "name": "end", "schema": {"format": "date", "title": "End", "type": "string"}, "required": true}, {"in": "query", "name": "client_id", "schema": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Client Id"}, "required": false}, {"in": "query", "name": "status", "schema": {"anyOf": [{"$ref": "#/components/schemas/JobStatus"}, {"type": "null"}]}, "required": false}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/JobOut"}, "title": "Response", "type": "array"}}}}}, "tags": ["schedule"], "security": [{"SessionAuth": []}]}, "post": {"operationId": "createJob", "summary": "Create Job", "parameters": [], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobOut"}}}}}, "tags": ["schedule"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/jobs/{job_id}": {"patch": {"operationId": "updateJob", "summary": "Update Job", "parameters": [{"in": "path", "name": "job_id", "schema": {"title": "Job Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobOut"}}}}}, "tags": ["schedule"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobUpdateIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}, "delete": {"operationId": "deleteJob", "summary": "Delete Job", "parameters": [{"in": "path", "name": "job_id", "schema": {"title": "Job Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "tags": ["schedule"], "security": [{"SessionAuth": []}]}}, "/api/route": {"get": {"operationId": "getRoutePlan", "summary": "Get Route Plan", "parameters": [{"in": "query", "name": "date", "schema": {"format": "date", "title": "Date", "type": "string"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RoutePlanOut"}}}}}, "tags": ["route"], "security": [{"SessionAuth": []}]}}, "/api/route/optimize": {"post": {"operationId": "optimizeRoute", "summary": "Optimize Route", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RoutePlanOut"}}}}}, "tags": ["route"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RouteOptimizeIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/route/reorder": {"post": {"operationId": "reorderRoute", "summary": "Reorder Route", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RoutePlanOut"}}}}}, "tags": ["route"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RouteReorderIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/equipment": {"get": {"operationId": "listEquipment", "summary": "List Equipment", "parameters": [{"in": "query", "name": "status", "schema": {"anyOf": [{"$ref": "#/components/schemas/EquipmentStatus"}, {"type": "null"}]}, "required": false}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/EquipmentOut"}, "title": "Response", "type": "array"}}}}}, "tags": ["equipment"], "security": [{"SessionAuth": []}]}, "post": {"operationId": "createEquipment", "summary": "Create Equipment", "parameters": [], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EquipmentOut"}}}}}, "tags": ["equipment"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/EquipmentIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/equipment/{equipment_id}": {"get": {"operationId": "getEquipment", "summary": "Get Equipment", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EquipmentOut"}}}}}, "tags": ["equipment"], "security": [{"SessionAuth": []}]}, "put": {"operationId": "updateEquipment", "summary": "Update Equipment", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EquipmentOut"}}}}}, "tags": ["equipment"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/EquipmentIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}, "delete": {"operationId": "deleteEquipment", "summary": "Delete Equipment", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "tags": ["equipment"], "security": [{"SessionAuth": []}]}}, "/api/equipment/{equipment_id}/photos": {"post": {"operationId": "uploadEquipmentPhoto", "summary": "Upload Equipment Photo", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EquipmentPhotoOut"}}}}}, "tags": ["equipment"], "requestBody": {"content": {"multipart/form-data": {"schema": {"properties": {"file": {"format": "binary", "title": "File", "type": "string"}, "caption": {"default": "", "title": "Caption", "type": "string"}}, "required": ["file"], "title": "MultiPartBodyParams", "type": "object"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/equipment/{equipment_id}/photos/{photo_id}": {"delete": {"operationId": "deleteEquipmentPhoto", "summary": "Delete Equipment Photo", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}, {"in": "path", "name": "photo_id", "schema": {"title": "Photo Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "tags": ["equipment"], "security": [{"SessionAuth": []}]}}, "/api/equipment/{equipment_id}/service": {"post": {"operationId": "logService", "summary": "Log Service", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ServiceRecordOut"}}}}}, "description": "Record a completed service; advances the equipment's service clock.", "tags": ["equipment"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ServiceRecordIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/equipment/{equipment_id}/service/{record_id}": {"delete": {"operationId": "deleteServiceRecord", "summary": "Delete Service Record", "parameters": [{"in": "path", "name": "equipment_id", "schema": {"title": "Equipment Id", "type": "integer"}, "required": true}, {"in": "path", "name": "record_id", "schema": {"title": "Record Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "tags": ["equipment"], "security": [{"SessionAuth": []}]}}, "/api/reminders": {"get": {"operationId": "listReminders", "summary": "List Reminders", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/ReminderOut"}, "title": "Response", "type": "array"}}}}}, "description": "Equipment due (or nearly due) for service, computed live.", "tags": ["notifications"], "security": [{"SessionAuth": []}]}}, "/api/reminders/run": {"post": {"operationId": "runReminders", "summary": "Run Reminders", "parameters": [], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/NotificationOut"}, "title": "Response", "type": "array"}}}}}, "description": "Trigger reminder generation for the current user now (what the daily\n`send_due_reminders` job does). Returns the notifications it created.", "tags": ["notifications"], "security": [{"SessionAuth": []}]}}, "/api/notifications": {"get": {"operationId": "listNotifications", "summary": "List Notifications", "parameters": [{"in": "query", "name": "unread", "schema": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Unread"}, "required": false}, {"in": "query", "name": "limit", "schema": {"default": 50, "title": "Limit", "type": "integer"}, "required": false}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/NotificationOut"}, "title": "Response", "type": "array"}}}}}, "tags": ["notifications"], "security": [{"SessionAuth": []}]}}, "/api/notifications/{notification_id}/read": {"post": {"operationId": "markNotificationRead", "summary": "Mark Notification Read", "parameters": [{"in": "path", "name": "notification_id", "schema": {"title": "Notification Id", "type": "integer"}, "required": true}], "responses": {"200": {"description": "OK", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotificationOut"}}}}}, "tags": ["notifications"], "security": [{"SessionAuth": []}]}}, "/api/notifications/read-all": {"post": {"operationId": "markAllNotificationsRead", "summary": "Mark All Notifications Read", "parameters": [], "responses": {"204": {"description": "No Content"}}, "tags": ["notifications"], "security": [{"SessionAuth": []}]}}, "/api/devices": {"post": {"operationId": "registerPushDevice", "summary": "Register Push Device", "parameters": [], "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PushDeviceOut"}}}}}, "description": "Register a device token for push notifications. The React Native app will\ncall this with its FCM/APNs token; delivery is mocked for now (see\ncore.services.notifications).", "tags": ["notifications"], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/PushDeviceIn"}}}, "required": true}, "security": [{"SessionAuth": []}]}}, "/api/devices/{device_id}": {"delete": {"operationId": "unregisterPushDevice", "summary": "Unregister Push Device", "parameters": [{"in": "path", "name": "device_id", "schema": {"title": "Device Id", "type": "integer"}, "required": true}], "responses": {"204": {"description": "No Content"}}, "tags": ["notifications"], "security": [{"SessionAuth": []}]}}}, "components": {"schemas": {"HealthOut": {"properties": {"status": {"title": "Status", "type": "string"}}, "required": ["status"], "title": "HealthOut", "type": "object"}, "UserOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "username": {"title": "Username", "type": "string"}, "email": {"title": "Email", "type": "string"}, "first_name": {"title": "First Name", "type": "string"}, "last_name": {"title": "Last Name", "type": "string"}}, "required": ["id", "username", "email", "first_name", "last_name"], "title": "UserOut", "type": "object"}, "ClientOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "name": {"title": "Name", "type": "string"}, "phone": {"title": "Phone", "type": "string"}, "email": {"title": "Email", "type": "string"}, "address": {"title": "Address", "type": "string"}, "notes": {"title": "Notes", "type": "string"}, "rate": {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "title": "Rate", "type": "string"}, "cost": {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "title": "Cost", "type": "string"}, "is_active": {"title": "Is Active", "type": "boolean"}, "lat": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Lat"}, "lng": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Lng"}, "geocode_status": {"$ref": "#/components/schemas/GeocodeStatus"}, "created_at": {"format": "date-time", "title": "Created At", "type": "string"}, "updated_at": {"format": "date-time", "title": "Updated At", "type": "string"}}, "required": ["id", "name", "phone", "email", "address", "notes", "rate", "cost", "is_active", "lat", "lng", "geocode_status", "created_at", "updated_at"], "title": "ClientOut", "type": "object"}, "GeocodeStatus": {"enum": ["pending", "ok", "failed"], "title": "GeocodeStatus", "type": "string"}, "ClientIn": {"properties": {"name": {"title": "Name", "type": "string"}, "phone": {"default": "", "title": "Phone", "type": "string"}, "email": {"default": "", "title": "Email", "type": "string"}, "address": {"default": "", "title": "Address", "type": "string"}, "notes": {"default": "", "title": "Notes", "type": "string"}, "rate": {"anyOf": [{"type": "number"}, {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string"}], "title": "Rate"}, "cost": {"anyOf": [{"type": "number"}, {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string"}], "default": "0", "title": "Cost"}, "is_active": {"default": true, "title": "Is Active", "type": "boolean"}}, "required": ["name", "rate"], "title": "ClientIn", "type": "object"}, "ProfileOut": {"properties": {"business_name": {"title": "Business Name", "type": "string"}, "home_address": {"title": "Home Address", "type": "string"}, "home_lat": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Home Lat"}, "home_lng": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Home Lng"}, "geocode_status": {"$ref": "#/components/schemas/GeocodeStatus"}}, "required": ["business_name", "home_address", "home_lat", "home_lng", "geocode_status"], "title": "ProfileOut", "type": "object"}, "ProfileIn": {"properties": {"business_name": {"default": "", "title": "Business Name", "type": "string"}, "home_address": {"default": "", "title": "Home Address", "type": "string"}}, "title": "ProfileIn", "type": "object"}, "Frequency": {"enum": ["weekly", "fortnightly", "every_3_weeks", "every_4_weeks"], "title": "Frequency", "type": "string"}, "SeriesOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "client_id": {"title": "Client Id", "type": "integer"}, "client_name": {"title": "Client Name", "type": "string"}, "frequency": {"$ref": "#/components/schemas/Frequency"}, "start_date": {"format": "date", "title": "Start Date", "type": "string"}, "default_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Default Time"}, "duration_minutes": {"title": "Duration Minutes", "type": "integer"}, "end_date": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "End Date"}}, "required": ["id", "client_id", "client_name", "frequency", "start_date", "default_time", "duration_minutes", "end_date"], "title": "SeriesOut", "type": "object"}, "SeriesIn": {"properties": {"client_id": {"title": "Client Id", "type": "integer"}, "frequency": {"$ref": "#/components/schemas/Frequency"}, "start_date": {"format": "date", "title": "Start Date", "type": "string"}, "default_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Default Time"}, "duration_minutes": {"default": 60, "title": "Duration Minutes", "type": "integer"}, "end_date": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "End Date"}}, "required": ["client_id", "frequency", "start_date"], "title": "SeriesIn", "type": "object"}, "SeriesUpdateIn": {"properties": {"frequency": {"$ref": "#/components/schemas/Frequency"}, "default_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Default Time"}, "duration_minutes": {"default": 60, "title": "Duration Minutes", "type": "integer"}, "end_date": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "End Date"}}, "required": ["frequency"], "title": "SeriesUpdateIn", "type": "object"}, "SeriesEndIn": {"properties": {"end_date": {"format": "date", "title": "End Date", "type": "string"}}, "required": ["end_date"], "title": "SeriesEndIn", "type": "object"}, "JobStatus": {"enum": ["scheduled", "completed", "skipped", "cancelled"], "title": "JobStatus", "type": "string"}, "JobOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "client_id": {"title": "Client Id", "type": "integer"}, "client_name": {"title": "Client Name", "type": "string"}, "series_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Series Id"}, "scheduled_date": {"format": "date", "title": "Scheduled Date", "type": "string"}, "scheduled_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Scheduled Time"}, "duration_minutes": {"title": "Duration Minutes", "type": "integer"}, "status": {"$ref": "#/components/schemas/JobStatus"}, "price": {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "title": "Price", "type": "string"}, "paid": {"title": "Paid", "type": "boolean"}, "notes": {"title": "Notes", "type": "string"}, "route_order": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Route Order"}}, "required": ["id", "client_id", "client_name", "series_id", "scheduled_date", "scheduled_time", "duration_minutes", "status", "price", "paid", "notes", "route_order"], "title": "JobOut", "type": "object"}, "JobIn": {"description": "A one-off job. Series occurrences are created via the series endpoints.", "properties": {"client_id": {"title": "Client Id", "type": "integer"}, "scheduled_date": {"format": "date", "title": "Scheduled Date", "type": "string"}, "scheduled_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Scheduled Time"}, "duration_minutes": {"default": 60, "title": "Duration Minutes", "type": "integer"}, "price": {"anyOf": [{"type": "number"}, {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string"}, {"type": "null"}], "title": "Price"}, "notes": {"default": "", "title": "Notes", "type": "string"}}, "required": ["client_id", "scheduled_date"], "title": "JobIn", "type": "object"}, "JobUpdateIn": {"description": "Partial update; only provided fields are applied.", "properties": {"scheduled_date": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Scheduled Date"}, "scheduled_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Scheduled Time"}, "duration_minutes": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Duration Minutes"}, "status": {"anyOf": [{"$ref": "#/components/schemas/JobStatus"}, {"type": "null"}]}, "price": {"anyOf": [{"type": "number"}, {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string"}, {"type": "null"}], "title": "Price"}, "paid": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Paid"}, "notes": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Notes"}}, "title": "JobUpdateIn", "type": "object"}, "LatLng": {"properties": {"lat": {"title": "Lat", "type": "number"}, "lng": {"title": "Lng", "type": "number"}}, "required": ["lat", "lng"], "title": "LatLng", "type": "object"}, "RoutePlanOut": {"properties": {"date": {"format": "date", "title": "Date", "type": "string"}, "home": {"anyOf": [{"$ref": "#/components/schemas/LatLng"}, {"type": "null"}]}, "stops": {"items": {"$ref": "#/components/schemas/RouteStopOut"}, "title": "Stops", "type": "array"}, "unrouted": {"items": {"$ref": "#/components/schemas/RouteStopOut"}, "title": "Unrouted", "type": "array"}, "total_duration_s": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Total Duration S"}, "used_fallback_matrix": {"title": "Used Fallback Matrix", "type": "boolean"}}, "required": ["date", "home", "stops", "unrouted", "total_duration_s", "used_fallback_matrix"], "title": "RoutePlanOut", "type": "object"}, "RouteStopOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "client_id": {"title": "Client Id", "type": "integer"}, "client_name": {"title": "Client Name", "type": "string"}, "series_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Series Id"}, "scheduled_date": {"format": "date", "title": "Scheduled Date", "type": "string"}, "scheduled_time": {"anyOf": [{"format": "time", "type": "string"}, {"type": "null"}], "title": "Scheduled Time"}, "duration_minutes": {"title": "Duration Minutes", "type": "integer"}, "status": {"$ref": "#/components/schemas/JobStatus"}, "price": {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "title": "Price", "type": "string"}, "paid": {"title": "Paid", "type": "boolean"}, "notes": {"title": "Notes", "type": "string"}, "route_order": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Route Order"}, "address": {"title": "Address", "type": "string"}, "lat": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Lat"}, "lng": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Lng"}, "leg_duration_s": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Leg Duration S"}}, "required": ["id", "client_id", "client_name", "series_id", "scheduled_date", "scheduled_time", "duration_minutes", "status", "price", "paid", "notes", "route_order", "address", "lat", "lng"], "title": "RouteStopOut", "type": "object"}, "RouteOptimizeIn": {"properties": {"date": {"format": "date", "title": "Date", "type": "string"}}, "required": ["date"], "title": "RouteOptimizeIn", "type": "object"}, "RouteReorderIn": {"properties": {"date": {"format": "date", "title": "Date", "type": "string"}, "job_ids": {"items": {"type": "integer"}, "title": "Job Ids", "type": "array"}}, "required": ["date", "job_ids"], "title": "RouteReorderIn", "type": "object"}, "EquipmentStatus": {"enum": ["active", "retired"], "title": "EquipmentStatus", "type": "string"}, "EquipmentOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "name": {"title": "Name", "type": "string"}, "make_model": {"title": "Make Model", "type": "string"}, "serial_number": {"title": "Serial Number", "type": "string"}, "purchase_date": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Purchase Date"}, "notes": {"title": "Notes", "type": "string"}, "status": {"$ref": "#/components/schemas/EquipmentStatus"}, "service_interval_days": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Service Interval Days"}, "last_serviced_on": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Last Serviced On"}, "next_service_due": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Next Service Due"}, "service_contact_name": {"title": "Service Contact Name", "type": "string"}, "service_contact_phone": {"title": "Service Contact Phone", "type": "string"}, "service_contact_email": {"title": "Service Contact Email", "type": "string"}, "service_contact_notes": {"title": "Service Contact Notes", "type": "string"}, "photos": {"items": {"$ref": "#/components/schemas/EquipmentPhotoOut"}, "title": "Photos", "type": "array"}, "service_records": {"items": {"$ref": "#/components/schemas/ServiceRecordOut"}, "title": "Service Records", "type": "array"}}, "required": ["id", "name", "make_model", "serial_number", "purchase_date", "notes", "status", "service_interval_days", "last_serviced_on", "next_service_due", "service_contact_name", "service_contact_phone", "service_contact_email", "service_contact_notes", "photos", "service_records"], "title": "EquipmentOut", "type": "object"}, "EquipmentPhotoOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "url": {"title": "Url", "type": "string"}, "caption": {"title": "Caption", "type": "string"}, "uploaded_at": {"format": "date-time", "title": "Uploaded At", "type": "string"}}, "required": ["id", "url", "caption", "uploaded_at"], "title": "EquipmentPhotoOut", "type": "object"}, "ServiceRecordOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "serviced_on": {"format": "date", "title": "Serviced On", "type": "string"}, "notes": {"title": "Notes", "type": "string"}, "cost": {"anyOf": [{"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string"}, {"type": "null"}], "title": "Cost"}}, "required": ["id", "serviced_on", "notes", "cost"], "title": "ServiceRecordOut", "type": "object"}, "EquipmentIn": {"properties": {"name": {"title": "Name", "type": "string"}, "make_model": {"default": "", "title": "Make Model", "type": "string"}, "serial_number": {"default": "", "title": "Serial Number", "type": "string"}, "purchase_date": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Purchase Date"}, "notes": {"default": "", "title": "Notes", "type": "string"}, "status": {"allOf": [{"$ref": "#/components/schemas/EquipmentStatus"}], "default": "active"}, "service_interval_days": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Service Interval Days"}, "last_serviced_on": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}], "title": "Last Serviced On"}, "service_contact_name": {"default": "", "title": "Service Contact Name", "type": "string"}, "service_contact_phone": {"default": "", "title": "Service Contact Phone", "type": "string"}, "service_contact_email": {"default": "", "title": "Service Contact Email", "type": "string"}, "service_contact_notes": {"default": "", "title": "Service Contact Notes", "type": "string"}}, "required": ["name"], "title": "EquipmentIn", "type": "object"}, "ServiceRecordIn": {"properties": {"serviced_on": {"format": "date", "title": "Serviced On", "type": "string"}, "notes": {"default": "", "title": "Notes", "type": "string"}, "cost": {"anyOf": [{"type": "number"}, {"pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string"}, {"type": "null"}], "title": "Cost"}}, "required": ["serviced_on"], "title": "ServiceRecordIn", "type": "object"}, "ReminderOut": {"properties": {"equipment_id": {"title": "Equipment Id", "type": "integer"}, "equipment_name": {"title": "Equipment Name", "type": "string"}, "due_on": {"format": "date", "title": "Due On", "type": "string"}, "days_until": {"title": "Days Until", "type": "integer"}, "overdue": {"title": "Overdue", "type": "boolean"}, "service_contact_name": {"title": "Service Contact Name", "type": "string"}, "service_contact_phone": {"title": "Service Contact Phone", "type": "string"}}, "required": ["equipment_id", "equipment_name", "due_on", "days_until", "overdue", "service_contact_name", "service_contact_phone"], "title": "ReminderOut", "type": "object"}, "NotificationOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "title": {"title": "Title", "type": "string"}, "body": {"title": "Body", "type": "string"}, "data": {"additionalProperties": true, "title": "Data", "type": "object"}, "created_at": {"format": "date-time", "title": "Created At", "type": "string"}, "read_at": {"anyOf": [{"format": "date-time", "type": "string"}, {"type": "null"}], "title": "Read At"}}, "required": ["id", "title", "body", "data", "created_at", "read_at"], "title": "NotificationOut", "type": "object"}, "Platform": {"enum": ["ios", "android", "web"], "title": "Platform", "type": "string"}, "PushDeviceOut": {"properties": {"id": {"title": "Id", "type": "integer"}, "token": {"title": "Token", "type": "string"}, "platform": {"$ref": "#/components/schemas/Platform"}, "created_at": {"format": "date-time", "title": "Created At", "type": "string"}}, "required": ["id", "token", "platform", "created_at"], "title": "PushDeviceOut", "type": "object"}, "PushDeviceIn": {"properties": {"token": {"title": "Token", "type": "string"}, "platform": {"$ref": "#/components/schemas/Platform"}}, "required": ["token", "platform"], "title": "PushDeviceIn", "type": "object"}}, "securitySchemes": {"SessionAuth": {"type": "apiKey", "in": "cookie", "name": "sessionid"}}}, "servers": []}
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Trade Management API", "version": "0.1.0", "description": "" },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/HealthOut" } }
+            }
+          }
+        },
+        "description": "Liveness check. Also ensures the CSRF cookie is set for the SPA."
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "getMe",
+        "summary": "Me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UserOut" } }
+            }
+          }
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/clients": {
+      "get": {
+        "operationId": "listClients",
+        "summary": "List Clients",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "active",
+            "schema": { "anyOf": [{ "type": "boolean" }, { "type": "null" }], "title": "Active" },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Search" },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/ClientOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "post": {
+        "operationId": "createClient",
+        "summary": "Create Client",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ClientOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ClientIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/clients/{client_id}": {
+      "get": {
+        "operationId": "getClient",
+        "summary": "Get Client",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ClientOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "put": {
+        "operationId": "updateClient",
+        "summary": "Update Client",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ClientOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ClientIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      },
+      "delete": {
+        "operationId": "deleteClient",
+        "summary": "Delete Client",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/clients/{client_id}/geocode": {
+      "post": {
+        "operationId": "geocodeClient",
+        "summary": "Geocode Client Retry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ClientOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "operationId": "getProfile",
+        "summary": "Get Profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProfileOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "put": {
+        "operationId": "updateProfile",
+        "summary": "Update Profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProfileOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ProfileIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/series": {
+      "get": {
+        "operationId": "listSeries",
+        "summary": "List Series",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "client_id",
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "title": "Client Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/SeriesOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "post": {
+        "operationId": "createSeries",
+        "summary": "Create Series",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SeriesOut" } }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SeriesIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/series/{series_id}": {
+      "put": {
+        "operationId": "updateSeries",
+        "summary": "Update Series",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "series_id",
+            "schema": { "title": "Series Id", "type": "integer" },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "apply_from",
+            "schema": {
+              "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+              "title": "Apply From"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SeriesOut" } }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SeriesUpdateIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      },
+      "delete": {
+        "operationId": "deleteSeries",
+        "summary": "Delete Series",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "series_id",
+            "schema": { "title": "Series Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "description": "Delete a series and all of its occurrences (including history).",
+        "tags": ["schedule"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/series/{series_id}/end": {
+      "post": {
+        "operationId": "endSeries",
+        "summary": "End Series",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "series_id",
+            "schema": { "title": "Series Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SeriesOut" } }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SeriesEndIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/jobs": {
+      "get": {
+        "operationId": "listJobs",
+        "summary": "List Jobs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "start",
+            "schema": { "format": "date", "title": "Start", "type": "string" },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "schema": { "format": "date", "title": "End", "type": "string" },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "client_id",
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "title": "Client Id"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "anyOf": [{ "$ref": "#/components/schemas/JobStatus" }, { "type": "null" }]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/JobOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "post": {
+        "operationId": "createJob",
+        "summary": "Create Job",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/JobOut" } }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/JobIn" } } },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "patch": {
+        "operationId": "updateJob",
+        "summary": "Update Job",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "schema": { "title": "Job Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/JobOut" } }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/JobUpdateIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      },
+      "delete": {
+        "operationId": "deleteJob",
+        "summary": "Delete Job",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "schema": { "title": "Job Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["schedule"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/route": {
+      "get": {
+        "operationId": "getRoutePlan",
+        "summary": "Get Route Plan",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date",
+            "schema": { "format": "date", "title": "Date", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/RoutePlanOut" } }
+            }
+          }
+        },
+        "tags": ["route"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/route/optimize": {
+      "post": {
+        "operationId": "optimizeRoute",
+        "summary": "Optimize Route",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/RoutePlanOut" } }
+            }
+          }
+        },
+        "tags": ["route"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RouteOptimizeIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/route/reorder": {
+      "post": {
+        "operationId": "reorderRoute",
+        "summary": "Reorder Route",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/RoutePlanOut" } }
+            }
+          }
+        },
+        "tags": ["route"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RouteReorderIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/equipment": {
+      "get": {
+        "operationId": "listEquipment",
+        "summary": "List Equipment",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "anyOf": [{ "$ref": "#/components/schemas/EquipmentStatus" }, { "type": "null" }]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/EquipmentOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["equipment"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "post": {
+        "operationId": "createEquipment",
+        "summary": "Create Equipment",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/EquipmentOut" } }
+            }
+          }
+        },
+        "tags": ["equipment"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/EquipmentIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/equipment/{equipment_id}": {
+      "get": {
+        "operationId": "getEquipment",
+        "summary": "Get Equipment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/EquipmentOut" } }
+            }
+          }
+        },
+        "tags": ["equipment"],
+        "security": [{ "SessionAuth": [] }]
+      },
+      "put": {
+        "operationId": "updateEquipment",
+        "summary": "Update Equipment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/EquipmentOut" } }
+            }
+          }
+        },
+        "tags": ["equipment"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/EquipmentIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      },
+      "delete": {
+        "operationId": "deleteEquipment",
+        "summary": "Delete Equipment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["equipment"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/equipment/{equipment_id}/photos": {
+      "post": {
+        "operationId": "uploadEquipmentPhoto",
+        "summary": "Upload Equipment Photo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/EquipmentPhotoOut" } }
+            }
+          }
+        },
+        "tags": ["equipment"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": { "format": "binary", "title": "File", "type": "string" },
+                  "caption": { "default": "", "title": "Caption", "type": "string" }
+                },
+                "required": ["file"],
+                "title": "MultiPartBodyParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/equipment/{equipment_id}/photos/{photo_id}": {
+      "delete": {
+        "operationId": "deleteEquipmentPhoto",
+        "summary": "Delete Equipment Photo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "photo_id",
+            "schema": { "title": "Photo Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["equipment"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/equipment/{equipment_id}/service": {
+      "post": {
+        "operationId": "logService",
+        "summary": "Log Service",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ServiceRecordOut" } }
+            }
+          }
+        },
+        "description": "Record a completed service; advances the equipment's service clock.",
+        "tags": ["equipment"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ServiceRecordIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/equipment/{equipment_id}/service/{record_id}": {
+      "delete": {
+        "operationId": "deleteServiceRecord",
+        "summary": "Delete Service Record",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "equipment_id",
+            "schema": { "title": "Equipment Id", "type": "integer" },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "record_id",
+            "schema": { "title": "Record Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["equipment"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/reminders": {
+      "get": {
+        "operationId": "listReminders",
+        "summary": "List Reminders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/ReminderOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Equipment due (or nearly due) for service, computed live.",
+        "tags": ["notifications"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/reminders/run": {
+      "post": {
+        "operationId": "runReminders",
+        "summary": "Run Reminders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/NotificationOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Trigger reminder generation for the current user now (what the daily\n`send_due_reminders` job does). Returns the notifications it created.",
+        "tags": ["notifications"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "operationId": "listNotifications",
+        "summary": "List Notifications",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "unread",
+            "schema": { "anyOf": [{ "type": "boolean" }, { "type": "null" }], "title": "Unread" },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "default": 50, "title": "Limit", "type": "integer" },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/NotificationOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["notifications"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/notifications/{notification_id}/read": {
+      "post": {
+        "operationId": "markNotificationRead",
+        "summary": "Mark Notification Read",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notification_id",
+            "schema": { "title": "Notification Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NotificationOut" } }
+            }
+          }
+        },
+        "tags": ["notifications"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/notifications/read-all": {
+      "post": {
+        "operationId": "markAllNotificationsRead",
+        "summary": "Mark All Notifications Read",
+        "parameters": [],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["notifications"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/devices": {
+      "post": {
+        "operationId": "registerPushDevice",
+        "summary": "Register Push Device",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PushDeviceOut" } }
+            }
+          }
+        },
+        "description": "Register a device token for push notifications. The React Native app will\ncall this with its FCM/APNs token; delivery is mocked for now (see\ncore.services.notifications).",
+        "tags": ["notifications"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PushDeviceIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }]
+      }
+    },
+    "/api/devices/{device_id}": {
+      "delete": {
+        "operationId": "unregisterPushDevice",
+        "summary": "Unregister Push Device",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "device_id",
+            "schema": { "title": "Device Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["notifications"],
+        "security": [{ "SessionAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthOut": {
+        "properties": { "status": { "title": "Status", "type": "string" } },
+        "required": ["status"],
+        "title": "HealthOut",
+        "type": "object"
+      },
+      "UserOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "username": { "title": "Username", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "first_name": { "title": "First Name", "type": "string" },
+          "last_name": { "title": "Last Name", "type": "string" }
+        },
+        "required": ["id", "username", "email", "first_name", "last_name"],
+        "title": "UserOut",
+        "type": "object"
+      },
+      "ClientOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "name": { "title": "Name", "type": "string" },
+          "phone": { "title": "Phone", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "address": { "title": "Address", "type": "string" },
+          "notes": { "title": "Notes", "type": "string" },
+          "rate": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Rate",
+            "type": "string"
+          },
+          "cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Cost",
+            "type": "string"
+          },
+          "is_active": { "title": "Is Active", "type": "boolean" },
+          "lat": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Lat" },
+          "lng": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Lng" },
+          "geocode_status": { "$ref": "#/components/schemas/GeocodeStatus" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" },
+          "updated_at": { "format": "date-time", "title": "Updated At", "type": "string" }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "email",
+          "address",
+          "notes",
+          "rate",
+          "cost",
+          "is_active",
+          "lat",
+          "lng",
+          "geocode_status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ClientOut",
+        "type": "object"
+      },
+      "GeocodeStatus": {
+        "enum": ["pending", "ok", "failed"],
+        "title": "GeocodeStatus",
+        "type": "string"
+      },
+      "ClientIn": {
+        "properties": {
+          "name": { "title": "Name", "type": "string" },
+          "phone": { "default": "", "title": "Phone", "type": "string" },
+          "email": { "default": "", "title": "Email", "type": "string" },
+          "address": { "default": "", "title": "Address", "type": "string" },
+          "notes": { "default": "", "title": "Notes", "type": "string" },
+          "rate": {
+            "anyOf": [
+              { "type": "number" },
+              { "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string" }
+            ],
+            "title": "Rate"
+          },
+          "cost": {
+            "anyOf": [
+              { "type": "number" },
+              { "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string" }
+            ],
+            "default": "0",
+            "title": "Cost"
+          },
+          "is_active": { "default": true, "title": "Is Active", "type": "boolean" }
+        },
+        "required": ["name", "rate"],
+        "title": "ClientIn",
+        "type": "object"
+      },
+      "ProfileOut": {
+        "properties": {
+          "business_name": { "title": "Business Name", "type": "string" },
+          "home_address": { "title": "Home Address", "type": "string" },
+          "home_lat": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Home Lat" },
+          "home_lng": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Home Lng" },
+          "geocode_status": { "$ref": "#/components/schemas/GeocodeStatus" }
+        },
+        "required": ["business_name", "home_address", "home_lat", "home_lng", "geocode_status"],
+        "title": "ProfileOut",
+        "type": "object"
+      },
+      "ProfileIn": {
+        "properties": {
+          "business_name": { "default": "", "title": "Business Name", "type": "string" },
+          "home_address": { "default": "", "title": "Home Address", "type": "string" }
+        },
+        "title": "ProfileIn",
+        "type": "object"
+      },
+      "Frequency": {
+        "enum": ["weekly", "fortnightly", "every_3_weeks", "every_4_weeks"],
+        "title": "Frequency",
+        "type": "string"
+      },
+      "SeriesOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "client_id": { "title": "Client Id", "type": "integer" },
+          "client_name": { "title": "Client Name", "type": "string" },
+          "frequency": { "$ref": "#/components/schemas/Frequency" },
+          "start_date": { "format": "date", "title": "Start Date", "type": "string" },
+          "default_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Default Time"
+          },
+          "duration_minutes": { "title": "Duration Minutes", "type": "integer" },
+          "end_date": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "End Date"
+          }
+        },
+        "required": [
+          "id",
+          "client_id",
+          "client_name",
+          "frequency",
+          "start_date",
+          "default_time",
+          "duration_minutes",
+          "end_date"
+        ],
+        "title": "SeriesOut",
+        "type": "object"
+      },
+      "SeriesIn": {
+        "properties": {
+          "client_id": { "title": "Client Id", "type": "integer" },
+          "frequency": { "$ref": "#/components/schemas/Frequency" },
+          "start_date": { "format": "date", "title": "Start Date", "type": "string" },
+          "default_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Default Time"
+          },
+          "duration_minutes": { "default": 60, "title": "Duration Minutes", "type": "integer" },
+          "end_date": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "End Date"
+          }
+        },
+        "required": ["client_id", "frequency", "start_date"],
+        "title": "SeriesIn",
+        "type": "object"
+      },
+      "SeriesUpdateIn": {
+        "properties": {
+          "frequency": { "$ref": "#/components/schemas/Frequency" },
+          "default_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Default Time"
+          },
+          "duration_minutes": { "default": 60, "title": "Duration Minutes", "type": "integer" },
+          "end_date": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "End Date"
+          }
+        },
+        "required": ["frequency"],
+        "title": "SeriesUpdateIn",
+        "type": "object"
+      },
+      "SeriesEndIn": {
+        "properties": { "end_date": { "format": "date", "title": "End Date", "type": "string" } },
+        "required": ["end_date"],
+        "title": "SeriesEndIn",
+        "type": "object"
+      },
+      "JobStatus": {
+        "enum": ["scheduled", "completed", "skipped", "cancelled"],
+        "title": "JobStatus",
+        "type": "string"
+      },
+      "JobOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "client_id": { "title": "Client Id", "type": "integer" },
+          "client_name": { "title": "Client Name", "type": "string" },
+          "series_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Series Id"
+          },
+          "scheduled_date": { "format": "date", "title": "Scheduled Date", "type": "string" },
+          "scheduled_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Scheduled Time"
+          },
+          "duration_minutes": { "title": "Duration Minutes", "type": "integer" },
+          "status": { "$ref": "#/components/schemas/JobStatus" },
+          "price": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price",
+            "type": "string"
+          },
+          "paid": { "title": "Paid", "type": "boolean" },
+          "notes": { "title": "Notes", "type": "string" },
+          "route_order": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Route Order"
+          }
+        },
+        "required": [
+          "id",
+          "client_id",
+          "client_name",
+          "series_id",
+          "scheduled_date",
+          "scheduled_time",
+          "duration_minutes",
+          "status",
+          "price",
+          "paid",
+          "notes",
+          "route_order"
+        ],
+        "title": "JobOut",
+        "type": "object"
+      },
+      "JobIn": {
+        "description": "A one-off job. Series occurrences are created via the series endpoints.",
+        "properties": {
+          "client_id": { "title": "Client Id", "type": "integer" },
+          "scheduled_date": { "format": "date", "title": "Scheduled Date", "type": "string" },
+          "scheduled_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Scheduled Time"
+          },
+          "duration_minutes": { "default": 60, "title": "Duration Minutes", "type": "integer" },
+          "price": {
+            "anyOf": [
+              { "type": "number" },
+              { "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Price"
+          },
+          "notes": { "default": "", "title": "Notes", "type": "string" }
+        },
+        "required": ["client_id", "scheduled_date"],
+        "title": "JobIn",
+        "type": "object"
+      },
+      "JobUpdateIn": {
+        "description": "Partial update; only provided fields are applied.",
+        "properties": {
+          "scheduled_date": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "Scheduled Date"
+          },
+          "scheduled_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Scheduled Time"
+          },
+          "duration_minutes": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Duration Minutes"
+          },
+          "status": { "anyOf": [{ "$ref": "#/components/schemas/JobStatus" }, { "type": "null" }] },
+          "price": {
+            "anyOf": [
+              { "type": "number" },
+              { "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Price"
+          },
+          "paid": { "anyOf": [{ "type": "boolean" }, { "type": "null" }], "title": "Paid" },
+          "notes": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Notes" }
+        },
+        "title": "JobUpdateIn",
+        "type": "object"
+      },
+      "LatLng": {
+        "properties": {
+          "lat": { "title": "Lat", "type": "number" },
+          "lng": { "title": "Lng", "type": "number" }
+        },
+        "required": ["lat", "lng"],
+        "title": "LatLng",
+        "type": "object"
+      },
+      "RoutePlanOut": {
+        "properties": {
+          "date": { "format": "date", "title": "Date", "type": "string" },
+          "home": { "anyOf": [{ "$ref": "#/components/schemas/LatLng" }, { "type": "null" }] },
+          "stops": {
+            "items": { "$ref": "#/components/schemas/RouteStopOut" },
+            "title": "Stops",
+            "type": "array"
+          },
+          "unrouted": {
+            "items": { "$ref": "#/components/schemas/RouteStopOut" },
+            "title": "Unrouted",
+            "type": "array"
+          },
+          "total_duration_s": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Total Duration S"
+          },
+          "used_fallback_matrix": { "title": "Used Fallback Matrix", "type": "boolean" }
+        },
+        "required": [
+          "date",
+          "home",
+          "stops",
+          "unrouted",
+          "total_duration_s",
+          "used_fallback_matrix"
+        ],
+        "title": "RoutePlanOut",
+        "type": "object"
+      },
+      "RouteStopOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "client_id": { "title": "Client Id", "type": "integer" },
+          "client_name": { "title": "Client Name", "type": "string" },
+          "series_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Series Id"
+          },
+          "scheduled_date": { "format": "date", "title": "Scheduled Date", "type": "string" },
+          "scheduled_time": {
+            "anyOf": [{ "format": "time", "type": "string" }, { "type": "null" }],
+            "title": "Scheduled Time"
+          },
+          "duration_minutes": { "title": "Duration Minutes", "type": "integer" },
+          "status": { "$ref": "#/components/schemas/JobStatus" },
+          "price": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price",
+            "type": "string"
+          },
+          "paid": { "title": "Paid", "type": "boolean" },
+          "notes": { "title": "Notes", "type": "string" },
+          "route_order": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Route Order"
+          },
+          "address": { "title": "Address", "type": "string" },
+          "lat": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Lat" },
+          "lng": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Lng" },
+          "leg_duration_s": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Leg Duration S"
+          }
+        },
+        "required": [
+          "id",
+          "client_id",
+          "client_name",
+          "series_id",
+          "scheduled_date",
+          "scheduled_time",
+          "duration_minutes",
+          "status",
+          "price",
+          "paid",
+          "notes",
+          "route_order",
+          "address",
+          "lat",
+          "lng"
+        ],
+        "title": "RouteStopOut",
+        "type": "object"
+      },
+      "RouteOptimizeIn": {
+        "properties": { "date": { "format": "date", "title": "Date", "type": "string" } },
+        "required": ["date"],
+        "title": "RouteOptimizeIn",
+        "type": "object"
+      },
+      "RouteReorderIn": {
+        "properties": {
+          "date": { "format": "date", "title": "Date", "type": "string" },
+          "job_ids": { "items": { "type": "integer" }, "title": "Job Ids", "type": "array" }
+        },
+        "required": ["date", "job_ids"],
+        "title": "RouteReorderIn",
+        "type": "object"
+      },
+      "EquipmentStatus": {
+        "enum": ["active", "retired"],
+        "title": "EquipmentStatus",
+        "type": "string"
+      },
+      "EquipmentOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "name": { "title": "Name", "type": "string" },
+          "make_model": { "title": "Make Model", "type": "string" },
+          "serial_number": { "title": "Serial Number", "type": "string" },
+          "purchase_date": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "Purchase Date"
+          },
+          "notes": { "title": "Notes", "type": "string" },
+          "status": { "$ref": "#/components/schemas/EquipmentStatus" },
+          "service_interval_days": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Service Interval Days"
+          },
+          "last_serviced_on": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "Last Serviced On"
+          },
+          "next_service_due": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "Next Service Due"
+          },
+          "service_contact_name": { "title": "Service Contact Name", "type": "string" },
+          "service_contact_phone": { "title": "Service Contact Phone", "type": "string" },
+          "service_contact_email": { "title": "Service Contact Email", "type": "string" },
+          "service_contact_notes": { "title": "Service Contact Notes", "type": "string" },
+          "photos": {
+            "items": { "$ref": "#/components/schemas/EquipmentPhotoOut" },
+            "title": "Photos",
+            "type": "array"
+          },
+          "service_records": {
+            "items": { "$ref": "#/components/schemas/ServiceRecordOut" },
+            "title": "Service Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "make_model",
+          "serial_number",
+          "purchase_date",
+          "notes",
+          "status",
+          "service_interval_days",
+          "last_serviced_on",
+          "next_service_due",
+          "service_contact_name",
+          "service_contact_phone",
+          "service_contact_email",
+          "service_contact_notes",
+          "photos",
+          "service_records"
+        ],
+        "title": "EquipmentOut",
+        "type": "object"
+      },
+      "EquipmentPhotoOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "url": { "title": "Url", "type": "string" },
+          "caption": { "title": "Caption", "type": "string" },
+          "uploaded_at": { "format": "date-time", "title": "Uploaded At", "type": "string" }
+        },
+        "required": ["id", "url", "caption", "uploaded_at"],
+        "title": "EquipmentPhotoOut",
+        "type": "object"
+      },
+      "ServiceRecordOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "serviced_on": { "format": "date", "title": "Serviced On", "type": "string" },
+          "notes": { "title": "Notes", "type": "string" },
+          "cost": {
+            "anyOf": [
+              { "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Cost"
+          }
+        },
+        "required": ["id", "serviced_on", "notes", "cost"],
+        "title": "ServiceRecordOut",
+        "type": "object"
+      },
+      "EquipmentIn": {
+        "properties": {
+          "name": { "title": "Name", "type": "string" },
+          "make_model": { "default": "", "title": "Make Model", "type": "string" },
+          "serial_number": { "default": "", "title": "Serial Number", "type": "string" },
+          "purchase_date": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "Purchase Date"
+          },
+          "notes": { "default": "", "title": "Notes", "type": "string" },
+          "status": {
+            "allOf": [{ "$ref": "#/components/schemas/EquipmentStatus" }],
+            "default": "active"
+          },
+          "service_interval_days": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Service Interval Days"
+          },
+          "last_serviced_on": {
+            "anyOf": [{ "format": "date", "type": "string" }, { "type": "null" }],
+            "title": "Last Serviced On"
+          },
+          "service_contact_name": {
+            "default": "",
+            "title": "Service Contact Name",
+            "type": "string"
+          },
+          "service_contact_phone": {
+            "default": "",
+            "title": "Service Contact Phone",
+            "type": "string"
+          },
+          "service_contact_email": {
+            "default": "",
+            "title": "Service Contact Email",
+            "type": "string"
+          },
+          "service_contact_notes": {
+            "default": "",
+            "title": "Service Contact Notes",
+            "type": "string"
+          }
+        },
+        "required": ["name"],
+        "title": "EquipmentIn",
+        "type": "object"
+      },
+      "ServiceRecordIn": {
+        "properties": {
+          "serviced_on": { "format": "date", "title": "Serviced On", "type": "string" },
+          "notes": { "default": "", "title": "Notes", "type": "string" },
+          "cost": {
+            "anyOf": [
+              { "type": "number" },
+              { "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$", "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Cost"
+          }
+        },
+        "required": ["serviced_on"],
+        "title": "ServiceRecordIn",
+        "type": "object"
+      },
+      "ReminderOut": {
+        "properties": {
+          "equipment_id": { "title": "Equipment Id", "type": "integer" },
+          "equipment_name": { "title": "Equipment Name", "type": "string" },
+          "due_on": { "format": "date", "title": "Due On", "type": "string" },
+          "days_until": { "title": "Days Until", "type": "integer" },
+          "overdue": { "title": "Overdue", "type": "boolean" },
+          "service_contact_name": { "title": "Service Contact Name", "type": "string" },
+          "service_contact_phone": { "title": "Service Contact Phone", "type": "string" }
+        },
+        "required": [
+          "equipment_id",
+          "equipment_name",
+          "due_on",
+          "days_until",
+          "overdue",
+          "service_contact_name",
+          "service_contact_phone"
+        ],
+        "title": "ReminderOut",
+        "type": "object"
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "title": { "title": "Title", "type": "string" },
+          "body": { "title": "Body", "type": "string" },
+          "data": { "additionalProperties": true, "title": "Data", "type": "object" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" },
+          "read_at": {
+            "anyOf": [{ "format": "date-time", "type": "string" }, { "type": "null" }],
+            "title": "Read At"
+          }
+        },
+        "required": ["id", "title", "body", "data", "created_at", "read_at"],
+        "title": "NotificationOut",
+        "type": "object"
+      },
+      "Platform": { "enum": ["ios", "android", "web"], "title": "Platform", "type": "string" },
+      "PushDeviceOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "token": { "title": "Token", "type": "string" },
+          "platform": { "$ref": "#/components/schemas/Platform" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" }
+        },
+        "required": ["id", "token", "platform", "created_at"],
+        "title": "PushDeviceOut",
+        "type": "object"
+      },
+      "PushDeviceIn": {
+        "properties": {
+          "token": { "title": "Token", "type": "string" },
+          "platform": { "$ref": "#/components/schemas/Platform" }
+        },
+        "required": ["token", "platform"],
+        "title": "PushDeviceIn",
+        "type": "object"
+      }
+    },
+    "securitySchemes": { "SessionAuth": { "type": "apiKey", "in": "cookie", "name": "sessionid" } }
+  },
+  "servers": []
+}

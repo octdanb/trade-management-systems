@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Camera, Phone, Trash2, Wrench } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { EquipmentForm, equipmentToFormValues } from '@/components/equipment-form'

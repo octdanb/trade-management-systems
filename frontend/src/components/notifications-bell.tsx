@@ -17,8 +17,7 @@ export function NotificationsBell() {
   const queryClient = useQueryClient()
   const notifications = useListNotifications({ limit: 20 })
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_BASE_KEY })
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_BASE_KEY })
 
   const markRead = useMarkNotificationRead({ mutation: { onSuccess: invalidate } })
   const markAllRead = useMarkAllNotificationsRead({ mutation: { onSuccess: invalidate } })

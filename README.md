@@ -43,9 +43,10 @@ Tech stack:
 
 | Layer    | Stack                                                                 |
 | -------- | --------------------------------------------------------------------- |
-| Backend  | Django 5 + [django-ninja](https://django-ninja.dev) API, Postgres     |
-| Auth     | [django-allauth](https://allauth.org) (headless) — email registration + Google login |
-| Frontend | Vite + React + TypeScript, Tailwind v4, [shadcn/ui](https://ui.shadcn.com) |
+| Backend  | Django 5 + [django-ninja](https://django-ninja.dev) API, Postgres — deps via [uv](https://docs.astral.sh/uv/), lint/format via [ruff](https://docs.astral.sh/ruff/) |
+| Auth     | [django-allauth](https://allauth.org) (headless) — email registration + Google login; session cookies on the web, Bearer access tokens for mobile |
+| Frontend | Vite + React + TypeScript, Tailwind v4, [shadcn/ui](https://ui.shadcn.com) — [pnpm](https://pnpm.io) + [Biome](https://biomejs.dev) |
+| Mobile   | [Expo](https://expo.dev) (SDK 57) + expo-router + [NativeWind](https://www.nativewind.dev) in `mobile/` — pnpm + Biome |
 | API client | [kubb](https://kubb.dev) generates an axios client + [TanStack Query](https://tanstack.com/query) hooks from the ninja OpenAPI schema |
 | Dev      | docker compose orchestrated via a [justfile](https://github.com/casey/just) |
 | CI       | GitHub Actions: lint/typecheck, then build + push prod images to GHCR |
@@ -145,10 +146,34 @@ shows in the "no location" list until the address is fixed.
 
 ## Auth
 
-Email/password registration and login go through allauth's headless JSON API
-(`/_allauth/browser/v1/...`); the UI lives in `frontend/src/pages/login.tsx`
-and `signup.tsx`. Email verification is disabled for prototyping
-(`ACCOUNT_EMAIL_VERIFICATION = "none"`).
+Email/password registration and login go through allauth's headless JSON API;
+the web UI lives in `frontend/src/pages/login.tsx` and `signup.tsx`.
+
+Two auth transports share the same user accounts:
+
+- **Web** (`/_allauth/browser/v1/...`): plain Django session cookies + CSRF —
+  same-origin via the Vite/nginx proxy.
+- **Mobile** (`/_allauth/app/v1/...`): token-based. Auth responses return a
+  `session_token` (drives further allauth calls via `X-Session-Token`) and an
+  **access token** (`meta.access_token`) sent to `/api/*` as
+  `Authorization: Bearer …`. Access tokens are stateless signed payloads
+  (`backend/core/auth.py`), TTL `ACCESS_TOKEN_TTL_DAYS` (default 14). The
+  ninja API accepts either transport.
+
+## Mobile app (`mobile/`)
+
+Expo (SDK 57) + expo-router + NativeWind + TanStack Query, tokens stored in
+expo-secure-store. Run it against the local backend:
+
+```sh
+cd mobile
+pnpm install
+EXPO_PUBLIC_API_URL=http://<your-lan-ip>:8000 pnpm start
+```
+
+then open in Expo Go / a simulator. `pnpm lint` (Biome) and `pnpm typecheck`
+mirror CI. Screens live in `mobile/app/` (file-based routing); the API/auth
+clients in `mobile/src/lib/` mirror the web app's.
 
 ### Google login
 

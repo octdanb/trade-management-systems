@@ -72,9 +72,7 @@ export function LoginPage() {
               />
             </div>
             {loginMutation.isError && (
-              <p className="text-sm text-destructive">
-                {allauthErrorMessage(loginMutation.error)}
-              </p>
+              <p className="text-sm text-destructive">{allauthErrorMessage(loginMutation.error)}</p>
             )}
             {socialError && !loginMutation.isError && (
               <p className="text-sm text-destructive">Google sign-in failed. Please try again.</p>

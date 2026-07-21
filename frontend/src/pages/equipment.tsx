@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus, Wrench } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EquipmentForm } from '@/components/equipment-form'

@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { BadgeCheck, MailWarning } from 'lucide-react'
+import { useState } from 'react'
 
 import { GoogleButton } from '@/components/google-button'
 import { Badge } from '@/components/ui/badge'
@@ -59,7 +59,11 @@ export function EmailVerificationCard() {
               disabled={resend.isPending || resend.isSuccess}
               onClick={() => resend.mutate(primary.email)}
             >
-              {resend.isSuccess ? 'Sent — check your email' : resend.isPending ? 'Sending…' : 'Resend verification email'}
+              {resend.isSuccess
+                ? 'Sent — check your email'
+                : resend.isPending
+                  ? 'Sending…'
+                  : 'Resend verification email'}
             </Button>
             {resend.isError && (
               <p className="text-sm text-destructive">{allauthErrorMessage(resend.error)}</p>
@@ -82,9 +86,7 @@ export function ChangePasswordCard() {
   const change = useMutation({
     mutationFn: () =>
       changePassword(
-        hasPassword
-          ? { current_password: current, new_password: next }
-          : { new_password: next },
+        hasPassword ? { current_password: current, new_password: next } : { new_password: next },
       ),
     onSuccess: () => {
       setCurrent('')
@@ -187,8 +189,8 @@ export function ConnectedAccountsCard() {
         )}
         {disconnect.isError && (
           <p className="text-sm text-destructive">
-            {allauthErrorMessage(disconnect.error)} You may need to set a password first so you
-            can still sign in.
+            {allauthErrorMessage(disconnect.error)} You may need to set a password first so you can
+            still sign in.
           </p>
         )}
       </CardContent>

@@ -178,6 +178,10 @@ ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "optio
 ACCOUNT_UNIQUE_EMAIL = True
 
 HEADLESS_ONLY = True
+# Issues Bearer access tokens (used by the mobile app against /api/*)
+# alongside allauth's session tokens. See core/auth.py.
+HEADLESS_TOKEN_STRATEGY = "core.auth.AccessTokenStrategy"
+ACCESS_TOKEN_TTL_DAYS = int(os.environ.get("ACCESS_TOKEN_TTL_DAYS", "14"))
 HEADLESS_FRONTEND_URLS = {
     "account_confirm_email": FRONTEND_URL + "/verify-email/{key}",
     "account_reset_password": FRONTEND_URL + "/reset-password",

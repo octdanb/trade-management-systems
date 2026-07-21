@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { MapPin, MapPinOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import {
   ChangePasswordCard,
@@ -19,8 +19,7 @@ export function SettingsPage() {
   const profile = useGetProfile()
   const updateProfile = useUpdateProfile({
     mutation: {
-      onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: getProfileQueryKey() }),
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: getProfileQueryKey() }),
     },
   })
 
@@ -56,7 +55,11 @@ export function SettingsPage() {
           >
             <div className="grid gap-2">
               <Label htmlFor="st-name">Business name</Label>
-              <Input id="st-name" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
+              <Input
+                id="st-name"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="st-home">Home address</Label>
