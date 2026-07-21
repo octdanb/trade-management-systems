@@ -28,6 +28,10 @@ services:
       FRONTEND_URL: http://localhost:5173
       GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
       GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      GEOCODER_USER_AGENT: ${GEOCODER_USER_AGENT:-}
+      GEOCODER_COUNTRY_CODES: ${GEOCODER_COUNTRY_CODES:-nz}
+      NOMINATIM_URL: ${NOMINATIM_URL:-https://nominatim.openstreetmap.org}
+      OSRM_URL: ${OSRM_URL:-https://router.project-osrm.org}
     volumes:
       - ./backend:/app
       - backend_venv:/app/.venv

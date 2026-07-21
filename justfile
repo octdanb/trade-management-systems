@@ -55,6 +55,10 @@ schema:
 codegen: schema
     docker compose run --rm frontend npx kubb generate
 
+# Run the backend test suite
+test:
+    docker compose run --rm backend uv run python manage.py test core
+
 # Lint backend (ruff) and typecheck/build frontend
 lint:
     docker compose run --rm backend uv run ruff check .

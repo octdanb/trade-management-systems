@@ -1,6 +1,26 @@
 # Trade Management Systems
 
-Full-stack prototype scaffold:
+A scheduling and route-planning app for solo service businesses — first use
+case: a lawn mowing round. Manage clients (contacts, address, per-visit rate &
+cost, notes), schedule one-off or repeating visits, track each job
+(done/skipped, price, paid), and plan each day's driving route in the best
+order.
+
+## Features
+
+- **Clients** — contact details, address, notes, per-visit rate and cost,
+  active/inactive. Addresses are geocoded automatically (Nominatim/OSM).
+- **Schedule** — month/week calendar (FullCalendar). Click a day to add a
+  one-off visit or a repeating series (weekly / fortnightly / every 3 or 4
+  weeks). Drag visits to reschedule. Series edits apply "this date onward"
+  and never touch completed or individually-moved visits.
+- **Today** — the day's route as an ordered stop list. One tap to optimize
+  the order by driving time (OSRM + nearest-neighbor/2-opt, straight-line
+  fallback when offline), manual re-ordering, per-stop done/skip/paid, day
+  revenue totals, and an "Open in Google Maps" link for turn-by-turn.
+- **Settings** — business name and home address (route start point).
+
+Tech stack:
 
 | Layer    | Stack                                                                 |
 | -------- | --------------------------------------------------------------------- |
@@ -37,6 +57,7 @@ just manage <cmd>     # any manage.py command
 just makemigrations   # after model changes
 just migrate
 just codegen          # regenerate frontend/src/gen from the ninja schema
+just test             # backend test suite (occurrences, routing, API isolation)
 just lint             # ruff + tsc
 just nuke             # stop and wipe volumes
 ```
@@ -51,6 +72,34 @@ just nuke             # stop and wipe volumes
 
 The generated code is committed so the frontend builds without a running
 backend (e.g. in CI).
+
+## Scheduling model
+
+Repeating appointments are an `AppointmentSeries` (client, frequency, start
+date, optional time/end date). Occurrences are materialized lazily into `Job`
+rows — on series create/edit out to ~90 days, and further whenever the
+schedule asks for a later range. Each `Job` carries its own status
+(scheduled/completed/skipped/cancelled), price (snapshotted from the client's
+rate, overridable), paid flag and notes, so history is never lost:
+
+- Dragging a visit moves that occurrence only (`modified=True` protects it
+  from series regeneration; `original_date` prevents duplicates).
+- "Edit series from this date" regenerates only future scheduled, untouched
+  occurrences.
+- Ending a series keeps everything on/before the end date.
+
+## Geocoding & routing
+
+Client addresses are geocoded on save via **Nominatim** (OpenStreetMap's free
+geocoder — set `GEOCODER_USER_AGENT` in `.env`, their policy requires an
+identifying UA with contact info). Route optimization fetches a driving-time
+matrix from the public **OSRM** server and orders the day's stops with
+nearest-neighbor + 2-opt, starting from your home address (Settings). If OSRM
+is unreachable it falls back to straight-line distances so the button always
+works. Both service URLs are env-overridable (`NOMINATIM_URL`, `OSRM_URL`)
+if you later self-host or usage outgrows the public servers' fair-use
+policies. Geocoding failures never block saving a client — the visit just
+shows in the "no location" list until the address is fixed.
 
 ## Auth
 
@@ -90,13 +139,17 @@ Production env vars the backend expects: `DJANGO_SECRET_KEY`,
 ```
 backend/
   config/            # settings, urls, ninja API mount
-  core/              # example app: Trade model + /api endpoints
+  core/
+    models.py        # BusinessProfile, Client, AppointmentSeries, Job
+    api*.py          # routers: clients/profile, series/jobs, route planning
+    services/        # occurrences (recurrence), geocode (Nominatim), routing (OSRM + 2-opt)
+    tests/           # occurrence semantics, routing heuristics, API isolation
 frontend/
   src/gen/           # kubb-generated API client + hooks (committed)
-  src/lib/           # axios/kubb client, allauth headless client
+  src/lib/           # axios/kubb client, allauth client, maps links
   src/hooks/         # useSession/useLogin/useSignup/useLogout
-  src/pages/         # login, signup, dashboard
-  src/components/ui/ # shadcn components (`npx shadcn add <name>` for more)
+  src/pages/         # login, signup, today (route), schedule (calendar), clients, settings
+  src/components/    # app layout, job/series/client forms, shadcn ui/
 docker-compose.yml   # local dev stack
 justfile             # task runner
 ```

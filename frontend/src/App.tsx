@@ -1,10 +1,15 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { AppLayout } from '@/components/app-layout'
 import { useHealth } from '@/gen'
 import { useSession } from '@/hooks/use-auth'
-import { DashboardPage } from '@/pages/dashboard'
+import { ClientDetailPage } from '@/pages/client-detail'
+import { ClientsPage } from '@/pages/clients'
 import { LoginPage } from '@/pages/login'
+import { SchedulePage } from '@/pages/schedule'
+import { SettingsPage } from '@/pages/settings'
 import { SignupPage } from '@/pages/signup'
+import { TodayPage } from '@/pages/today'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const session = useSession()
@@ -38,13 +43,19 @@ export default function App() {
   return (
     <Routes>
       <Route
-        path="/"
         element={
           <RequireAuth>
-            <DashboardPage />
+            <AppLayout />
           </RequireAuth>
         }
-      />
+      >
+        <Route path="/" element={<Navigate to="/today" replace />} />
+        <Route path="/today" element={<TodayPage />} />
+        <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/clients/:id" element={<ClientDetailPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Route>
       <Route
         path="/login"
         element={

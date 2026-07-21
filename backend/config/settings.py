@@ -102,7 +102,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Pacific/Auckland"
 USE_I18N = True
 USE_TZ = True
 
@@ -154,6 +154,22 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+# ---------------------------------------------------------------------------
+# Geocoding & routing (OpenStreetMap public services; swap URLs to self-hosted
+# instances if usage grows — both have strict fair-use policies).
+# ---------------------------------------------------------------------------
+
+# `or` fallbacks so empty env vars (e.g. from docker compose) keep the default.
+NOMINATIM_URL = os.environ.get("NOMINATIM_URL") or "https://nominatim.openstreetmap.org"
+OSRM_URL = os.environ.get("OSRM_URL") or "https://router.project-osrm.org"
+# Nominatim policy requires an identifying User-Agent with contact details.
+GEOCODER_USER_AGENT = (
+    os.environ.get("GEOCODER_USER_AGENT")
+    or "trade-management-systems/0.1 (set GEOCODER_USER_AGENT)"
+)
+# Bias geocoding results to a country (ISO 3166-1 alpha-2), empty to disable.
+GEOCODER_COUNTRY_CODES = os.environ.get("GEOCODER_COUNTRY_CODES", "nz")
 
 EMAIL_BACKEND = os.environ.get(
     "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
