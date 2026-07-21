@@ -1,3 +1,4 @@
+export type { AppBuildOut } from "./AppBuildOut.ts";
 export type { ClientIn } from "./ClientIn.ts";
 export type { ClientOut } from "./ClientOut.ts";
 export type {
@@ -94,6 +95,13 @@ export type {
   GetEquipmentQuery,
   GetEquipmentQueryResponse,
 } from "./GetEquipment.ts";
+export type {
+  GetLatestAppBuild200,
+  GetLatestAppBuildQuery,
+  GetLatestAppBuildQueryParams,
+  GetLatestAppBuildQueryParamsPlatformEnumKey,
+  GetLatestAppBuildQueryResponse,
+} from "./GetLatestAppBuild.ts";
 export type { GetMe200, GetMeQuery, GetMeQueryResponse } from "./GetMe.ts";
 export type {
   GetProfile200,
@@ -248,6 +256,13 @@ export type {
   UpdateSeriesQueryParams,
 } from "./UpdateSeries.ts";
 export type {
+  UploadAppBuild201,
+  UploadAppBuildMutation,
+  UploadAppBuildMutationRequest,
+  UploadAppBuildMutationRequestPlatformEnumKey,
+  UploadAppBuildMutationResponse,
+} from "./UploadAppBuild.ts";
+export type {
   UploadEquipmentPhoto201,
   UploadEquipmentPhotoMutation,
   UploadEquipmentPhotoMutationRequest,
@@ -258,5 +273,7 @@ export type { UserOut } from "./UserOut.ts";
 export { equipmentStatusEnum } from "./EquipmentStatus.ts";
 export { frequencyEnum } from "./Frequency.ts";
 export { geocodeStatusEnum } from "./GeocodeStatus.ts";
+export { getLatestAppBuildQueryParamsPlatformEnum } from "./GetLatestAppBuild.ts";
 export { jobStatusEnum } from "./JobStatus.ts";
 export { platformEnum } from "./Platform.ts";
+export { uploadAppBuildMutationRequestPlatformEnum } from "./UploadAppBuild.ts";

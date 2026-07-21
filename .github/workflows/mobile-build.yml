@@ -1,0 +1,125 @@
+name: Mobile Build
+
+# Builds the Android beta APK (expo prebuild + gradle — no Expo account
+# needed; the runner has the Android SDK) and publishes it:
+#   - uploads to the backend (POST /api/app/builds) so the webapp's download
+#     button and the in-app update banner pick it up,
+#   - attaches it to the GitHub release when triggered by one,
+#   - always stores it as a workflow artifact.
+#
+# versionCode is the workflow run number (monotonic), which is what the
+# in-app update check compares against.
+#
+# Required config:
+#   environment `production` variables: APP_DOMAIN (e.g. mow.example.com)
+#   environment `production` secrets:   APP_BUILD_UPLOAD_TOKEN (same value
+#     as the backend's APP_BUILD_UPLOAD_TOKEN env / nomad variable)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: "Release notes for this build"
+        required: false
+        default: ""
+
+concurrency:
+  group: mobile-build
+  cancel-in-progress: false
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: mobile/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile/pnpm-lock.yaml
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Stamp version and versionCode
+        id: version
+        run: |
+          code=${{ github.run_number }}
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            version="${{ github.event.release.tag_name }}"
+            version="${version#v}"
+          else
+            version=$(node -p "require('./app.json').expo.version")
+          fi
+          node - "$version" "$code" << 'EOF'
+          const fs = require('fs')
+          const [version, code] = process.argv.slice(1)
+          const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
+          app.expo.version = version
+          app.expo.android.versionCode = Number(code)
+          fs.writeFileSync('app.json', JSON.stringify(app, null, 2))
+          EOF
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "Building $version ($code)"
+
+      - name: Prebuild android project
+        run: pnpm exec expo prebuild --platform android --no-install
+
+      - name: Build APK
+        working-directory: mobile/android
+        run: ./gradlew :app:assembleRelease --no-daemon
+
+      - name: Rename APK
+        id: apk
+        run: |
+          apk="mow-${{ steps.version.outputs.version }}-${{ steps.version.outputs.code }}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk "$apk"
+          echo "path=mobile/$apk" >> "$GITHUB_OUTPUT"
+          echo "name=$apk" >> "$GITHUB_OUTPUT"
+
+      - name: Store as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.apk.outputs.name }}
+          path: ${{ steps.apk.outputs.path }}
+
+      - name: Attach to GitHub release
+        if: github.event_name == 'release'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "${{ steps.apk.outputs.path }}" --clobber
+
+      - name: Publish to the backend
+        working-directory: .
+        env:
+          APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+          UPLOAD_TOKEN: ${{ secrets.APP_BUILD_UPLOAD_TOKEN }}
+        run: |
+          if [[ -z "$APP_DOMAIN" || -z "$UPLOAD_TOKEN" ]]; then
+            echo "APP_DOMAIN / APP_BUILD_UPLOAD_TOKEN not configured — skipping backend publish."
+            exit 0
+          fi
+          notes="${{ github.event_name == 'release' && github.event.release.body || inputs.notes }}"
+          curl -fsS -X POST "https://${APP_DOMAIN}/api/app/builds" \
+            -H "X-Upload-Token: ${UPLOAD_TOKEN}" \
+            -F "file=@${{ steps.apk.outputs.path }}" \
+            -F "version=${{ steps.version.outputs.version }}" \
+            -F "version_code=${{ steps.version.outputs.code }}" \
+            -F "platform=android" \
+            -F "notes=${notes}"
+          echo "Published ${{ steps.apk.outputs.name }} to https://${APP_DOMAIN}"

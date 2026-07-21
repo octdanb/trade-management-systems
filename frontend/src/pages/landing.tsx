@@ -5,6 +5,7 @@ import {
   Car,
   Check,
   CircleDollarSign,
+  Download,
   MapPin,
   Route,
   Smartphone,
@@ -15,6 +16,7 @@ import {
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
+import { useGetLatestAppBuild } from '@/gen'
 import { useSession } from '@/hooks/use-auth'
 import { cn } from '@/lib/utils'
 
@@ -116,6 +118,36 @@ function RouteMock() {
         <span className="font-semibold tabular-nums">$95.00</span>
       </div>
     </div>
+  )
+}
+
+function AndroidBetaSection() {
+  const build = useGetLatestAppBuild(
+    { platform: 'android' },
+    { query: { retry: false, staleTime: 300_000 } },
+  )
+  if (!build.data) return null
+
+  return (
+    <section id="android-beta" className="border-t">
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center sm:px-6">
+        <span className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
+          Beta
+        </span>
+        <h2 className="max-w-xl text-2xl font-bold tracking-tight sm:text-3xl">
+          Take it in the truck — get the Android app
+        </h2>
+        <p className="max-w-md text-sm text-muted-foreground">
+          Version {build.data.version} · installs directly (you may need to allow installs from your
+          browser). iOS is coming later.
+        </p>
+        <Button size="lg" asChild>
+          <a href={build.data.download_url} download>
+            <Download /> Download for Android (.apk)
+          </a>
+        </Button>
+      </div>
+    </section>
   )
 }
 
@@ -260,6 +292,9 @@ export function LandingPage() {
             </ol>
           </div>
         </section>
+
+        {/* Android beta */}
+        <AndroidBetaSection />
 
         {/* CTA */}
         <section className="border-t bg-secondary/30">

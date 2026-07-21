@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as Application from 'expo-application'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Platform, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
 import { Badge, Button, Card, Field } from '../../src/components/ui'
+
 import { useGetProfile, useUpdateProfile } from '../../src/gen'
 import { useLogout, useSession } from '../../src/hooks/use-auth'
 import { allauthErrorMessage, changePassword } from '../../src/lib/allauth'
@@ -125,7 +126,13 @@ export default function SettingsScreen() {
 
         <Card>
           <Text className="mb-1 font-semibold text-foreground">Account</Text>
-          <Text className="mb-3 text-xs text-muted-foreground">{session.data?.email}</Text>
+          <Text className="mb-1 text-xs text-muted-foreground">{session.data?.email}</Text>
+          {Platform.OS !== 'web' && (
+            <Text className="mb-3 text-xs text-muted-foreground">
+              App version {Application.nativeApplicationVersion ?? 'dev'} (build{' '}
+              {Application.nativeBuildVersion ?? '—'})
+            </Text>
+          )}
           <Button
             title="Sign out"
             variant="outline"

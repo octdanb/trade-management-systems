@@ -224,6 +224,26 @@ So cutting a release is: `git checkout -b release/1.2.0 && git push -u origin
 release/1.2.0`. The release job is idempotent — re-pushing the branch after a
 fix won't duplicate the release (delete the release + tag first to re-cut).
 
+## Android beta distribution
+
+The **Mobile Build** workflow (Actions → Mobile Build → Run workflow, and
+automatically on every release) compiles the Android APK with expo prebuild +
+gradle on the CI runner, then:
+
+- publishes it to the backend (`POST /api/app/builds`, guarded by the
+  `APP_BUILD_UPLOAD_TOKEN` shared secret; APKs live in the same S3/MinIO
+  media storage as photos),
+- attaches it to the GitHub release,
+- keeps it as a workflow artifact.
+
+`GET /api/app/latest?platform=android` (public) reports the newest version;
+the landing page shows a "Download for Android" button whenever a build
+exists, and the mobile app compares its own versionCode against it, showing
+an in-app "Update available" banner that downloads the new APK. versionCode
+is the CI run number, so it's always increasing; the human version comes from
+the release tag (or mobile/app.json for manual runs). Builds can also be
+uploaded manually through the Django admin.
+
 ## Deployment (Nomad + Traefik)
 
 Publishing a release automatically deploys it: the `Deploy` workflow runs

@@ -4,9 +4,8 @@
  */
 
 export const platformEnum = {
-  ios: "ios",
   android: "android",
-  web: "web",
+  ios: "ios",
 } as const;
 
 export type PlatformEnumKey = (typeof platformEnum)[keyof typeof platformEnum];

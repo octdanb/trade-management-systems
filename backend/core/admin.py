@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import AppointmentSeries, BusinessProfile, Client, Job
+from core.models import AppBuild, AppointmentSeries, BusinessProfile, Client, Job
 
 
 @admin.register(BusinessProfile)
@@ -50,3 +50,9 @@ class JobAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "paid")
     date_hierarchy = "scheduled_date"
+
+
+@admin.register(AppBuild)
+class AppBuildAdmin(admin.ModelAdmin):
+    list_display = ("platform", "version", "version_code", "created_at")
+    list_filter = ("platform",)

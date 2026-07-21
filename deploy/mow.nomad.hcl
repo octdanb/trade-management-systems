@@ -265,6 +265,7 @@ job "mow" {
           GOOGLE_OAUTH_CLIENT_ID={{ $v.google_oauth_client_id }}
           GOOGLE_OAUTH_CLIENT_SECRET={{ $v.google_oauth_client_secret }}
           GEOCODER_USER_AGENT={{ $v.geocoder_user_agent }}
+          APP_BUILD_UPLOAD_TOKEN={{ $v.app_build_upload_token }}
           AWS_ACCESS_KEY_ID={{ $v.minio_root_user }}
           AWS_SECRET_ACCESS_KEY={{ $v.minio_root_password }}
           {{- range nomadService "mow-db" }}

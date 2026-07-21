@@ -220,6 +220,10 @@ GEOCODER_USER_AGENT = (
 # Bias geocoding results to a country (ISO 3166-1 alpha-2), empty to disable.
 GEOCODER_COUNTRY_CODES = os.environ.get("GEOCODER_COUNTRY_CODES", "nz")
 
+# Shared secret for CI to upload mobile app builds (POST /api/app/builds).
+# Unset (default) = uploads disabled; admin uploads always work.
+APP_BUILD_UPLOAD_TOKEN = os.environ.get("APP_BUILD_UPLOAD_TOKEN", "")
+
 EMAIL_BACKEND = os.environ.get(
     "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )

@@ -31,7 +31,7 @@
             }
           }
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/clients": {
@@ -67,7 +67,7 @@
           }
         },
         "tags": ["clients"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "post": {
         "operationId": "createClient",
@@ -88,7 +88,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/clients/{client_id}": {
@@ -112,7 +112,7 @@
           }
         },
         "tags": ["clients"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "put": {
         "operationId": "updateClient",
@@ -140,7 +140,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "delete": {
         "operationId": "deleteClient",
@@ -155,7 +155,7 @@
         ],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["clients"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/clients/{client_id}/geocode": {
@@ -179,7 +179,7 @@
           }
         },
         "tags": ["clients"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/profile": {
@@ -196,7 +196,7 @@
           }
         },
         "tags": ["clients"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "put": {
         "operationId": "updateProfile",
@@ -217,7 +217,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/series": {
@@ -250,7 +250,7 @@
           }
         },
         "tags": ["schedule"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "post": {
         "operationId": "createSeries",
@@ -271,7 +271,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/series/{series_id}": {
@@ -310,7 +310,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "delete": {
         "operationId": "deleteSeries",
@@ -326,7 +326,7 @@
         "responses": { "204": { "description": "No Content" } },
         "description": "Delete a series and all of its occurrences (including history).",
         "tags": ["schedule"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/series/{series_id}/end": {
@@ -356,7 +356,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/jobs": {
@@ -409,7 +409,7 @@
           }
         },
         "tags": ["schedule"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "post": {
         "operationId": "createJob",
@@ -428,7 +428,7 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/JobIn" } } },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/jobs/{job_id}": {
@@ -458,7 +458,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "delete": {
         "operationId": "deleteJob",
@@ -473,7 +473,7 @@
         ],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["schedule"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/route": {
@@ -497,7 +497,7 @@
           }
         },
         "tags": ["route"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/route/optimize": {
@@ -520,7 +520,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/route/reorder": {
@@ -543,7 +543,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/equipment": {
@@ -575,7 +575,7 @@
           }
         },
         "tags": ["equipment"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "post": {
         "operationId": "createEquipment",
@@ -596,7 +596,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/equipment/{equipment_id}": {
@@ -620,7 +620,7 @@
           }
         },
         "tags": ["equipment"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "put": {
         "operationId": "updateEquipment",
@@ -648,7 +648,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       },
       "delete": {
         "operationId": "deleteEquipment",
@@ -663,7 +663,7 @@
         ],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["equipment"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/equipment/{equipment_id}/photos": {
@@ -703,7 +703,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/equipment/{equipment_id}/photos/{photo_id}": {
@@ -726,7 +726,7 @@
         ],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["equipment"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/equipment/{equipment_id}/service": {
@@ -757,7 +757,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/equipment/{equipment_id}/service/{record_id}": {
@@ -780,7 +780,7 @@
         ],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["equipment"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/reminders": {
@@ -804,7 +804,7 @@
         },
         "description": "Equipment due (or nearly due) for service, computed live.",
         "tags": ["notifications"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/reminders/run": {
@@ -828,7 +828,7 @@
         },
         "description": "Trigger reminder generation for the current user now (what the daily\n`send_due_reminders` job does). Returns the notifications it created.",
         "tags": ["notifications"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/notifications": {
@@ -864,7 +864,7 @@
           }
         },
         "tags": ["notifications"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/notifications/{notification_id}/read": {
@@ -888,7 +888,7 @@
           }
         },
         "tags": ["notifications"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/notifications/read-all": {
@@ -898,7 +898,7 @@
         "parameters": [],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["notifications"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/devices": {
@@ -922,7 +922,7 @@
           },
           "required": true
         },
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
     "/api/devices/{device_id}": {
@@ -939,7 +939,73 @@
         ],
         "responses": { "204": { "description": "No Content" } },
         "tags": ["notifications"],
-        "security": [{ "SessionAuth": [] }]
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
+    "/api/app/latest": {
+      "get": {
+        "operationId": "getLatestAppBuild",
+        "summary": "Get Latest App Build",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "platform",
+            "schema": {
+              "allOf": [{ "enum": ["android", "ios"], "title": "Platform", "type": "string" }],
+              "default": "android"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AppBuildOut" } }
+            }
+          }
+        },
+        "tags": ["app"]
+      }
+    },
+    "/api/app/builds": {
+      "post": {
+        "operationId": "uploadAppBuild",
+        "summary": "Upload App Build",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AppBuildOut" } }
+            }
+          }
+        },
+        "tags": ["app"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "title": "MultiPartBodyParams",
+                "type": "object",
+                "properties": {
+                  "version": { "title": "Version", "type": "string" },
+                  "version_code": { "title": "Version Code", "type": "integer" },
+                  "platform": {
+                    "allOf": [
+                      { "enum": ["android", "ios"], "title": "Platform", "type": "string" }
+                    ],
+                    "default": "android"
+                  },
+                  "notes": { "default": "", "title": "Notes", "type": "string" },
+                  "file": { "format": "binary", "title": "File", "type": "string" }
+                },
+                "required": ["version", "version_code", "file"]
+              }
+            }
+          },
+          "required": true
+        }
       }
     }
   },
@@ -1546,7 +1612,7 @@
         "title": "NotificationOut",
         "type": "object"
       },
-      "Platform": { "enum": ["ios", "android", "web"], "title": "Platform", "type": "string" },
+      "Platform": { "enum": ["android", "ios"], "title": "Platform", "type": "string" },
       "PushDeviceOut": {
         "properties": {
           "id": { "title": "Id", "type": "integer" },
@@ -1566,9 +1632,25 @@
         "required": ["token", "platform"],
         "title": "PushDeviceIn",
         "type": "object"
+      },
+      "AppBuildOut": {
+        "properties": {
+          "platform": { "$ref": "#/components/schemas/Platform" },
+          "version": { "title": "Version", "type": "string" },
+          "version_code": { "title": "Version Code", "type": "integer" },
+          "download_url": { "title": "Download Url", "type": "string" },
+          "notes": { "title": "Notes", "type": "string" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" }
+        },
+        "required": ["platform", "version", "version_code", "download_url", "notes", "created_at"],
+        "title": "AppBuildOut",
+        "type": "object"
       }
     },
-    "securitySchemes": { "SessionAuth": { "type": "apiKey", "in": "cookie", "name": "sessionid" } }
+    "securitySchemes": {
+      "SessionAuth": { "type": "apiKey", "in": "cookie", "name": "sessionid" },
+      "AccessTokenAuth": { "type": "http", "scheme": "bearer" }
+    }
   },
   "servers": []
 }

@@ -256,3 +256,29 @@ class Notification(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class AppBuild(models.Model):
+    """A distributable mobile app build (beta APKs, later store builds)."""
+
+    class Platform(models.TextChoices):
+        ANDROID = "android", "Android"
+        IOS = "ios", "iOS"
+
+    platform = models.CharField(max_length=10, choices=Platform.choices)
+    version = models.CharField(max_length=32)  # human version, e.g. "1.2.0"
+    version_code = models.PositiveIntegerField()  # monotonically increasing
+    file = models.FileField(upload_to="app-builds/")
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-version_code", "-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["platform", "version_code"], name="uniq_platform_version_code"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.platform} {self.version} ({self.version_code})"

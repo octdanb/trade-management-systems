@@ -59,7 +59,8 @@ nomad var put nomad/jobs/mow \
   minio_root_password="$(openssl rand -hex 24)" \
   google_oauth_client_id=... \
   google_oauth_client_secret=... \
-  geocoder_user_agent="mow/1.0 (you@example.com)"
+  geocoder_user_agent="mow/1.0 (you@example.com)" \
+  app_build_upload_token="$(openssl rand -hex 24)"
 ```
 
 All keys are required (templates fail closed if missing). For Google OAuth,

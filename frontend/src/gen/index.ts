@@ -14,6 +14,8 @@ export type { GetClientQueryKey } from "./hooks/useGetClient.ts";
 export type { GetClientSuspenseQueryKey } from "./hooks/useGetClientSuspense.ts";
 export type { GetEquipmentQueryKey } from "./hooks/useGetEquipment.ts";
 export type { GetEquipmentSuspenseQueryKey } from "./hooks/useGetEquipmentSuspense.ts";
+export type { GetLatestAppBuildQueryKey } from "./hooks/useGetLatestAppBuild.ts";
+export type { GetLatestAppBuildSuspenseQueryKey } from "./hooks/useGetLatestAppBuildSuspense.ts";
 export type { GetMeQueryKey } from "./hooks/useGetMe.ts";
 export type { GetMeSuspenseQueryKey } from "./hooks/useGetMeSuspense.ts";
 export type { GetProfileQueryKey } from "./hooks/useGetProfile.ts";
@@ -47,7 +49,9 @@ export type { UpdateEquipmentMutationKey } from "./hooks/useUpdateEquipment.ts";
 export type { UpdateJobMutationKey } from "./hooks/useUpdateJob.ts";
 export type { UpdateProfileMutationKey } from "./hooks/useUpdateProfile.ts";
 export type { UpdateSeriesMutationKey } from "./hooks/useUpdateSeries.ts";
+export type { UploadAppBuildMutationKey } from "./hooks/useUploadAppBuild.ts";
 export type { UploadEquipmentPhotoMutationKey } from "./hooks/useUploadEquipmentPhoto.ts";
+export type { AppBuildOut } from "./types/AppBuildOut.ts";
 export type { ClientIn } from "./types/ClientIn.ts";
 export type { ClientOut } from "./types/ClientOut.ts";
 export type {
@@ -147,6 +151,13 @@ export type {
   GetEquipmentQuery,
   GetEquipmentQueryResponse,
 } from "./types/GetEquipment.ts";
+export type {
+  GetLatestAppBuild200,
+  GetLatestAppBuildQuery,
+  GetLatestAppBuildQueryParams,
+  GetLatestAppBuildQueryParamsPlatformEnumKey,
+  GetLatestAppBuildQueryResponse,
+} from "./types/GetLatestAppBuild.ts";
 export type {
   GetMe200,
   GetMeQuery,
@@ -309,6 +320,13 @@ export type {
   UpdateSeriesQueryParams,
 } from "./types/UpdateSeries.ts";
 export type {
+  UploadAppBuild201,
+  UploadAppBuildMutation,
+  UploadAppBuildMutationRequest,
+  UploadAppBuildMutationRequestPlatformEnumKey,
+  UploadAppBuildMutationResponse,
+} from "./types/UploadAppBuild.ts";
+export type {
   UploadEquipmentPhoto201,
   UploadEquipmentPhotoMutation,
   UploadEquipmentPhotoMutationRequest,
@@ -330,6 +348,7 @@ export { endSeries } from "./clients/endSeries.ts";
 export { geocodeClient } from "./clients/geocodeClient.ts";
 export { getClient } from "./clients/getClient.ts";
 export { getEquipment } from "./clients/getEquipment.ts";
+export { getLatestAppBuild } from "./clients/getLatestAppBuild.ts";
 export { getMe } from "./clients/getMe.ts";
 export { getProfile } from "./clients/getProfile.ts";
 export { getRoutePlan } from "./clients/getRoutePlan.ts";
@@ -353,6 +372,7 @@ export { updateEquipment } from "./clients/updateEquipment.ts";
 export { updateJob } from "./clients/updateJob.ts";
 export { updateProfile } from "./clients/updateProfile.ts";
 export { updateSeries } from "./clients/updateSeries.ts";
+export { uploadAppBuild } from "./clients/uploadAppBuild.ts";
 export { uploadEquipmentPhoto } from "./clients/uploadEquipmentPhoto.ts";
 export { createClientMutationKey } from "./hooks/useCreateClient.ts";
 export { createClientMutationOptions } from "./hooks/useCreateClient.ts";
@@ -402,6 +422,12 @@ export { useGetEquipment } from "./hooks/useGetEquipment.ts";
 export { getEquipmentSuspenseQueryKey } from "./hooks/useGetEquipmentSuspense.ts";
 export { getEquipmentSuspenseQueryOptions } from "./hooks/useGetEquipmentSuspense.ts";
 export { useGetEquipmentSuspense } from "./hooks/useGetEquipmentSuspense.ts";
+export { getLatestAppBuildQueryKey } from "./hooks/useGetLatestAppBuild.ts";
+export { getLatestAppBuildQueryOptions } from "./hooks/useGetLatestAppBuild.ts";
+export { useGetLatestAppBuild } from "./hooks/useGetLatestAppBuild.ts";
+export { getLatestAppBuildSuspenseQueryKey } from "./hooks/useGetLatestAppBuildSuspense.ts";
+export { getLatestAppBuildSuspenseQueryOptions } from "./hooks/useGetLatestAppBuildSuspense.ts";
+export { useGetLatestAppBuildSuspense } from "./hooks/useGetLatestAppBuildSuspense.ts";
 export { getMeQueryKey } from "./hooks/useGetMe.ts";
 export { getMeQueryOptions } from "./hooks/useGetMe.ts";
 export { useGetMe } from "./hooks/useGetMe.ts";
@@ -501,11 +527,16 @@ export { useUpdateProfile } from "./hooks/useUpdateProfile.ts";
 export { updateSeriesMutationKey } from "./hooks/useUpdateSeries.ts";
 export { updateSeriesMutationOptions } from "./hooks/useUpdateSeries.ts";
 export { useUpdateSeries } from "./hooks/useUpdateSeries.ts";
+export { uploadAppBuildMutationKey } from "./hooks/useUploadAppBuild.ts";
+export { uploadAppBuildMutationOptions } from "./hooks/useUploadAppBuild.ts";
+export { useUploadAppBuild } from "./hooks/useUploadAppBuild.ts";
 export { uploadEquipmentPhotoMutationKey } from "./hooks/useUploadEquipmentPhoto.ts";
 export { uploadEquipmentPhotoMutationOptions } from "./hooks/useUploadEquipmentPhoto.ts";
 export { useUploadEquipmentPhoto } from "./hooks/useUploadEquipmentPhoto.ts";
 export { equipmentStatusEnum } from "./types/EquipmentStatus.ts";
 export { frequencyEnum } from "./types/Frequency.ts";
 export { geocodeStatusEnum } from "./types/GeocodeStatus.ts";
+export { getLatestAppBuildQueryParamsPlatformEnum } from "./types/GetLatestAppBuild.ts";
 export { jobStatusEnum } from "./types/JobStatus.ts";
 export { platformEnum } from "./types/Platform.ts";
+export { uploadAppBuildMutationRequestPlatformEnum } from "./types/UploadAppBuild.ts";

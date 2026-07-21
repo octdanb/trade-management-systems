@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from ninja import Schema
 
-from core.models import AppointmentSeries, Equipment, GeocodeStatus, Job, PushDevice
+from core.models import AppBuild, AppointmentSeries, Equipment, GeocodeStatus, Job, PushDevice
 
 
 class HealthOut(Schema):
@@ -294,3 +294,19 @@ class PushDeviceOut(Schema):
     token: str
     platform: PushDevice.Platform
     created_at: datetime
+
+
+# --- App distribution ---------------------------------------------------------
+
+
+class AppBuildOut(Schema):
+    platform: AppBuild.Platform
+    version: str
+    version_code: int
+    download_url: str
+    notes: str
+    created_at: datetime
+
+    @staticmethod
+    def resolve_download_url(obj):
+        return obj.file.url

@@ -15,7 +15,7 @@ lookup per request but also no server-side revocation — acceptable for the
 prototype; swap in a DB/JWT-with-jti strategy later if revocation matters.
 """
 
-from allauth.headless.tokens.sessions import SessionTokenStrategy
+from allauth.headless.tokens.strategies.sessions import SessionTokenStrategy
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import signing
