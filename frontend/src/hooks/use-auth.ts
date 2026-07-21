@@ -1,8 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { getSessionUser, login, logout, signup } from '@/lib/allauth'
+import {
+  getSessionUser,
+  listEmailAddresses,
+  listProviderAccounts,
+  login,
+  logout,
+  signup,
+} from '@/lib/allauth'
 
 export const SESSION_QUERY_KEY = ['auth', 'session'] as const
+export const EMAILS_QUERY_KEY = ['auth', 'emails'] as const
+export const PROVIDERS_QUERY_KEY = ['auth', 'providers'] as const
 
 export function useSession() {
   return useQuery({
@@ -34,5 +43,27 @@ export function useLogout() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => queryClient.invalidateQueries(),
+  })
+}
+
+/** Email addresses + verification state; only fetched when signed in. */
+export function useEmailAddresses(enabled = true) {
+  const session = useSession()
+  return useQuery({
+    queryKey: EMAILS_QUERY_KEY,
+    queryFn: listEmailAddresses,
+    enabled: enabled && !!session.data,
+    staleTime: 60_000,
+  })
+}
+
+/** Connected social accounts; only fetched when signed in. */
+export function useProviderAccounts(enabled = true) {
+  const session = useSession()
+  return useQuery({
+    queryKey: PROVIDERS_QUERY_KEY,
+    queryFn: listProviderAccounts,
+    enabled: enabled && !!session.data,
+    staleTime: 60_000,
   })
 }

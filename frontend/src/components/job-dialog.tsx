@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import {
-  statusEnum,
+  jobStatusEnum,
   useCreateJob,
   useCreateSeries,
   useDeleteJob,
@@ -30,11 +30,11 @@ import {
   useUpdateJob,
   useUpdateSeries,
   type JobOut,
-  type Status,
+  type JobStatus,
 } from '@/gen'
 import { JOBS_BASE_KEY } from '@/lib/query-keys'
 
-const STATUS_LABELS: Record<Status, string> = {
+const STATUS_LABELS: Record<JobStatus, string> = {
   scheduled: 'Scheduled',
   completed: 'Completed',
   skipped: 'Skipped',
@@ -176,7 +176,7 @@ export function EditJobDialog({
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [price, setPrice] = useState('')
-  const [status, setStatus] = useState<Status>(statusEnum.scheduled)
+  const [status, setStatus] = useState<JobStatus>(jobStatusEnum.scheduled)
   const [paid, setPaid] = useState(false)
   const [notes, setNotes] = useState('')
   const [loadedJobId, setLoadedJobId] = useState<number | null>(null)
@@ -253,7 +253,7 @@ export function EditJobDialog({
             </div>
             <div className="grid gap-2">
               <Label>Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as Status)}>
+              <Select value={status} onValueChange={(v) => setStatus(v as JobStatus)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>

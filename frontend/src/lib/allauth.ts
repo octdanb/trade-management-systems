@@ -13,6 +13,22 @@ export type AuthUser = {
   display: string
   email: string
   username?: string
+  has_usable_password?: boolean
+}
+
+export type EmailAddress = {
+  email: string
+  verified: boolean
+  primary: boolean
+}
+
+export type ProviderAccount = {
+  uid: string
+  display: string
+  provider: {
+    id: string
+    name: string
+  }
 }
 
 type SessionResponse = {
@@ -62,6 +78,72 @@ export async function logout() {
     if (isAxiosError(error) && error.response?.status === 401) return
     throw error
   }
+}
+
+// --- Password management -----------------------------------------------------
+
+/**
+ * Change (or, for social-only accounts without one, set) the password.
+ * `currentPassword` is required only when the account already has one.
+ */
+export async function changePassword(payload: {
+  current_password?: string
+  new_password: string
+}) {
+  await axiosInstance.post(`${BASE}/account/password/change`, payload)
+}
+
+/** Sends a password-reset email (always succeeds, even for unknown emails). */
+export async function requestPasswordReset(email: string) {
+  await axiosInstance.post(`${BASE}/auth/password/request`, { email })
+}
+
+/**
+ * Completes a password reset with the key from the email. allauth responds
+ * 401 afterwards (you're deliberately left logged out) — that's success.
+ */
+export async function resetPassword(key: string, password: string) {
+  try {
+    await axiosInstance.post(`${BASE}/auth/password/reset`, { key, password })
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 401) return
+    throw error
+  }
+}
+
+// --- Email verification --------------------------------------------------------
+
+/** Confirms an email address with the key from the verification email. */
+export async function verifyEmail(key: string) {
+  try {
+    await axiosInstance.post(`${BASE}/auth/email/verify`, { key })
+  } catch (error) {
+    // 401 = verified while not logged in; the verification itself succeeded.
+    if (isAxiosError(error) && error.response?.status === 401) return
+    throw error
+  }
+}
+
+export async function listEmailAddresses(): Promise<EmailAddress[]> {
+  const res = await axiosInstance.get<{ data: EmailAddress[] }>(`${BASE}/account/email`)
+  return res.data.data
+}
+
+export async function resendVerification(email: string) {
+  await axiosInstance.put(`${BASE}/account/email`, { email })
+}
+
+// --- Social account connections ------------------------------------------------
+
+export async function listProviderAccounts(): Promise<ProviderAccount[]> {
+  const res = await axiosInstance.get<{ data: ProviderAccount[] }>(`${BASE}/account/providers`)
+  return res.data.data
+}
+
+export async function disconnectProviderAccount(provider: string, accountUid: string) {
+  await axiosInstance.delete(`${BASE}/account/providers`, {
+    data: { provider, account: accountUid },
+  })
 }
 
 /** Extracts a human-readable message from an allauth headless error response. */

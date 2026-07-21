@@ -93,14 +93,17 @@ class AppointmentSeries(models.Model):
         return f"{self.client} {self.get_frequency_display()} from {self.start_date}"
 
 
+class JobStatus(models.TextChoices):
+    SCHEDULED = "scheduled", "Scheduled"
+    COMPLETED = "completed", "Completed"
+    SKIPPED = "skipped", "Skipped"
+    CANCELLED = "cancelled", "Cancelled"
+
+
 class Job(models.Model):
     """A single visit — either a one-off or a materialized series occurrence."""
 
-    class Status(models.TextChoices):
-        SCHEDULED = "scheduled", "Scheduled"
-        COMPLETED = "completed", "Completed"
-        SKIPPED = "skipped", "Skipped"
-        CANCELLED = "cancelled", "Cancelled"
+    Status = JobStatus
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="jobs"
@@ -138,3 +141,118 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.client} on {self.scheduled_date} ({self.status})"
+
+
+class EquipmentStatus(models.TextChoices):
+    ACTIVE = "active", "Active"
+    RETIRED = "retired", "Retired"
+
+
+class Equipment(models.Model):
+    """A tool or machine (mower, trimmer, trailer, ...) with service tracking."""
+
+    Status = EquipmentStatus
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="equipment"
+    )
+    name = models.CharField(max_length=120)
+    make_model = models.CharField(max_length=120, blank=True)
+    serial_number = models.CharField(max_length=120, blank=True)
+    purchase_date = models.DateField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.ACTIVE)
+    # Service cadence: due every N days after the last service (or purchase).
+    service_interval_days = models.PositiveIntegerField(null=True, blank=True)
+    last_serviced_on = models.DateField(null=True, blank=True)
+    # Who to call when it needs servicing.
+    service_contact_name = models.CharField(max_length=120, blank=True)
+    service_contact_phone = models.CharField(max_length=40, blank=True)
+    service_contact_email = models.EmailField(blank=True)
+    service_contact_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name_plural = "equipment"
+
+    @property
+    def next_service_due(self):
+        """Date the next service is due, or None when no cadence is set."""
+        from datetime import timedelta
+
+        if not self.service_interval_days:
+            return None
+        anchor = self.last_serviced_on or self.purchase_date
+        if anchor is None:
+            return None
+        return anchor + timedelta(days=self.service_interval_days)
+
+    def __str__(self):
+        return self.name
+
+
+class EquipmentPhoto(models.Model):
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name="photos")
+    image = models.ImageField(upload_to="equipment/%Y/%m/")
+    caption = models.CharField(max_length=200, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+
+class ServiceRecord(models.Model):
+    equipment = models.ForeignKey(
+        Equipment, on_delete=models.CASCADE, related_name="service_records"
+    )
+    serviced_on = models.DateField()
+    notes = models.TextField(blank=True)
+    cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-serviced_on", "-id"]
+
+
+class PushDevice(models.Model):
+    """A registered device for push notifications (future React Native app)."""
+
+    class Platform(models.TextChoices):
+        IOS = "ios", "iOS"
+        ANDROID = "android", "Android"
+        WEB = "web", "Web"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="push_devices"
+    )
+    token = models.CharField(max_length=255)
+    platform = models.CharField(max_length=10, choices=Platform.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "token"], name="uniq_user_device_token")
+        ]
+
+
+class Notification(models.Model):
+    """
+    Notification outbox. Today this doubles as the in-app notification feed
+    and a MOCK of the push pipeline: `services.notifications.send_push` writes
+    rows here instead of calling FCM/APNs. The React Native app later swaps
+    the transport without touching callers.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
+    )
+    title = models.CharField(max_length=200)
+    body = models.TextField(blank=True)
+    data = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]

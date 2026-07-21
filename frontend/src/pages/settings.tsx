@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { MapPin, MapPinOff } from 'lucide-react'
 
+import {
+  ChangePasswordCard,
+  ConnectedAccountsCard,
+  EmailVerificationCard,
+} from '@/components/account-settings'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -84,6 +89,11 @@ export function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      <h2 className="mt-2 text-lg font-semibold">Account</h2>
+      <EmailVerificationCard />
+      <ChangePasswordCard />
+      <ConnectedAccountsCard />
     </div>
   )
 }

@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
-  statusEnum,
+  jobStatusEnum,
   useGetRoutePlan,
   useOptimizeRoute,
   useReorderRoute,
@@ -54,9 +54,9 @@ export function TodayPage() {
   const allJobs = [...stops, ...unrouted]
   const mapsUrl = plan.data ? googleMapsDirectionsUrl(plan.data.home ?? null, stops) : null
 
-  const doneCount = allJobs.filter((j) => j.status === statusEnum.completed).length
+  const doneCount = allJobs.filter((j) => j.status === jobStatusEnum.completed).length
   const revenue = allJobs
-    .filter((j) => j.status === statusEnum.completed)
+    .filter((j) => j.status === jobStatusEnum.completed)
     .reduce((sum, j) => sum + Number(j.price), 0)
 
   function move(index: number, delta: number) {
@@ -173,8 +173,8 @@ function StopCard({
   onSetStatus: (status: 'scheduled' | 'completed' | 'skipped') => void
   onTogglePaid: () => void
 }) {
-  const done = stop.status === statusEnum.completed
-  const skipped = stop.status === statusEnum.skipped
+  const done = stop.status === jobStatusEnum.completed
+  const skipped = stop.status === jobStatusEnum.skipped
 
   return (
     <Card className={cn('py-3', (done || skipped) && 'opacity-70')}>

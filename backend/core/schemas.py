@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from ninja import Schema
 
-from core.models import AppointmentSeries, GeocodeStatus, Job
+from core.models import AppointmentSeries, Equipment, GeocodeStatus, Job, PushDevice
 
 
 class HealthOut(Schema):
@@ -191,3 +191,106 @@ class RouteOptimizeIn(Schema):
 class RouteReorderIn(Schema):
     date: date
     job_ids: list[int]
+
+
+# --- Equipment ---------------------------------------------------------------
+
+
+class EquipmentIn(Schema):
+    name: str
+    make_model: str = ""
+    serial_number: str = ""
+    purchase_date: date | None = None
+    notes: str = ""
+    status: Equipment.Status = Equipment.Status.ACTIVE
+    service_interval_days: int | None = None
+    last_serviced_on: date | None = None
+    service_contact_name: str = ""
+    service_contact_phone: str = ""
+    service_contact_email: str = ""
+    service_contact_notes: str = ""
+
+
+class EquipmentPhotoOut(Schema):
+    id: int
+    url: str
+    caption: str
+    uploaded_at: datetime
+
+    @staticmethod
+    def resolve_url(obj):
+        return obj.image.url
+
+
+class ServiceRecordOut(Schema):
+    id: int
+    serviced_on: date
+    notes: str
+    cost: Decimal | None
+
+
+class ServiceRecordIn(Schema):
+    serviced_on: date
+    notes: str = ""
+    cost: Decimal | None = None
+
+
+class EquipmentOut(Schema):
+    id: int
+    name: str
+    make_model: str
+    serial_number: str
+    purchase_date: date | None
+    notes: str
+    status: Equipment.Status
+    service_interval_days: int | None
+    last_serviced_on: date | None
+    next_service_due: date | None
+    service_contact_name: str
+    service_contact_phone: str
+    service_contact_email: str
+    service_contact_notes: str
+    photos: list[EquipmentPhotoOut]
+    service_records: list[ServiceRecordOut]
+
+    @staticmethod
+    def resolve_photos(obj):
+        return obj.photos.all()
+
+    @staticmethod
+    def resolve_service_records(obj):
+        return obj.service_records.all()
+
+
+# --- Reminders & notifications -----------------------------------------------
+
+
+class ReminderOut(Schema):
+    equipment_id: int
+    equipment_name: str
+    due_on: date
+    days_until: int
+    overdue: bool
+    service_contact_name: str
+    service_contact_phone: str
+
+
+class NotificationOut(Schema):
+    id: int
+    title: str
+    body: str
+    data: dict
+    created_at: datetime
+    read_at: datetime | None
+
+
+class PushDeviceIn(Schema):
+    token: str
+    platform: PushDevice.Platform
+
+
+class PushDeviceOut(Schema):
+    id: int
+    token: str
+    platform: PushDevice.Platform
+    created_at: datetime

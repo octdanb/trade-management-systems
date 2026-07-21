@@ -3,16 +3,17 @@
  * Do not edit manually.
  */
 
-export const statusEnum = {
+export const jobStatusEnum = {
   scheduled: "scheduled",
   completed: "completed",
   skipped: "skipped",
   cancelled: "cancelled",
 } as const;
 
-export type StatusEnumKey = (typeof statusEnum)[keyof typeof statusEnum];
+export type JobStatusEnumKey =
+  (typeof jobStatusEnum)[keyof typeof jobStatusEnum];
 
 /**
- * Status
+ * JobStatus
  */
-export type Status = StatusEnumKey;
+export type JobStatus = JobStatusEnumKey;

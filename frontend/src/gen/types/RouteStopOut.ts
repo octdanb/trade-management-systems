@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import type { Status } from "./Status.ts";
+import type { JobStatus } from "./JobStatus.ts";
 
 /**
  * RouteStopOut
@@ -34,7 +34,7 @@ export type RouteStopOut = {
   /**
    * @type string
    */
-  status: Status;
+  status: JobStatus;
   /**
    * @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
    * @type string

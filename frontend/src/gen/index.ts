@@ -1,13 +1,19 @@
 export type { CreateClientMutationKey } from "./hooks/useCreateClient.ts";
+export type { CreateEquipmentMutationKey } from "./hooks/useCreateEquipment.ts";
 export type { CreateJobMutationKey } from "./hooks/useCreateJob.ts";
 export type { CreateSeriesMutationKey } from "./hooks/useCreateSeries.ts";
 export type { DeleteClientMutationKey } from "./hooks/useDeleteClient.ts";
+export type { DeleteEquipmentMutationKey } from "./hooks/useDeleteEquipment.ts";
+export type { DeleteEquipmentPhotoMutationKey } from "./hooks/useDeleteEquipmentPhoto.ts";
 export type { DeleteJobMutationKey } from "./hooks/useDeleteJob.ts";
 export type { DeleteSeriesMutationKey } from "./hooks/useDeleteSeries.ts";
+export type { DeleteServiceRecordMutationKey } from "./hooks/useDeleteServiceRecord.ts";
 export type { EndSeriesMutationKey } from "./hooks/useEndSeries.ts";
 export type { GeocodeClientMutationKey } from "./hooks/useGeocodeClient.ts";
 export type { GetClientQueryKey } from "./hooks/useGetClient.ts";
 export type { GetClientSuspenseQueryKey } from "./hooks/useGetClientSuspense.ts";
+export type { GetEquipmentQueryKey } from "./hooks/useGetEquipment.ts";
+export type { GetEquipmentSuspenseQueryKey } from "./hooks/useGetEquipmentSuspense.ts";
 export type { GetMeQueryKey } from "./hooks/useGetMe.ts";
 export type { GetMeSuspenseQueryKey } from "./hooks/useGetMeSuspense.ts";
 export type { GetProfileQueryKey } from "./hooks/useGetProfile.ts";
@@ -18,16 +24,30 @@ export type { HealthQueryKey } from "./hooks/useHealth.ts";
 export type { HealthSuspenseQueryKey } from "./hooks/useHealthSuspense.ts";
 export type { ListClientsQueryKey } from "./hooks/useListClients.ts";
 export type { ListClientsSuspenseQueryKey } from "./hooks/useListClientsSuspense.ts";
+export type { ListEquipmentQueryKey } from "./hooks/useListEquipment.ts";
+export type { ListEquipmentSuspenseQueryKey } from "./hooks/useListEquipmentSuspense.ts";
 export type { ListJobsQueryKey } from "./hooks/useListJobs.ts";
 export type { ListJobsSuspenseQueryKey } from "./hooks/useListJobsSuspense.ts";
+export type { ListNotificationsQueryKey } from "./hooks/useListNotifications.ts";
+export type { ListNotificationsSuspenseQueryKey } from "./hooks/useListNotificationsSuspense.ts";
+export type { ListRemindersQueryKey } from "./hooks/useListReminders.ts";
+export type { ListRemindersSuspenseQueryKey } from "./hooks/useListRemindersSuspense.ts";
 export type { ListSeriesQueryKey } from "./hooks/useListSeries.ts";
 export type { ListSeriesSuspenseQueryKey } from "./hooks/useListSeriesSuspense.ts";
+export type { LogServiceMutationKey } from "./hooks/useLogService.ts";
+export type { MarkAllNotificationsReadMutationKey } from "./hooks/useMarkAllNotificationsRead.ts";
+export type { MarkNotificationReadMutationKey } from "./hooks/useMarkNotificationRead.ts";
 export type { OptimizeRouteMutationKey } from "./hooks/useOptimizeRoute.ts";
+export type { RegisterPushDeviceMutationKey } from "./hooks/useRegisterPushDevice.ts";
 export type { ReorderRouteMutationKey } from "./hooks/useReorderRoute.ts";
+export type { RunRemindersMutationKey } from "./hooks/useRunReminders.ts";
+export type { UnregisterPushDeviceMutationKey } from "./hooks/useUnregisterPushDevice.ts";
 export type { UpdateClientMutationKey } from "./hooks/useUpdateClient.ts";
+export type { UpdateEquipmentMutationKey } from "./hooks/useUpdateEquipment.ts";
 export type { UpdateJobMutationKey } from "./hooks/useUpdateJob.ts";
 export type { UpdateProfileMutationKey } from "./hooks/useUpdateProfile.ts";
 export type { UpdateSeriesMutationKey } from "./hooks/useUpdateSeries.ts";
+export type { UploadEquipmentPhotoMutationKey } from "./hooks/useUploadEquipmentPhoto.ts";
 export type { ClientIn } from "./types/ClientIn.ts";
 export type { ClientOut } from "./types/ClientOut.ts";
 export type {
@@ -36,6 +56,12 @@ export type {
   CreateClientMutationRequest,
   CreateClientMutationResponse,
 } from "./types/CreateClient.ts";
+export type {
+  CreateEquipment201,
+  CreateEquipmentMutation,
+  CreateEquipmentMutationRequest,
+  CreateEquipmentMutationResponse,
+} from "./types/CreateEquipment.ts";
 export type {
   CreateJob201,
   CreateJobMutation,
@@ -55,6 +81,18 @@ export type {
   DeleteClientPathParams,
 } from "./types/DeleteClient.ts";
 export type {
+  DeleteEquipment204,
+  DeleteEquipmentMutation,
+  DeleteEquipmentMutationResponse,
+  DeleteEquipmentPathParams,
+} from "./types/DeleteEquipment.ts";
+export type {
+  DeleteEquipmentPhoto204,
+  DeleteEquipmentPhotoMutation,
+  DeleteEquipmentPhotoMutationResponse,
+  DeleteEquipmentPhotoPathParams,
+} from "./types/DeleteEquipmentPhoto.ts";
+export type {
   DeleteJob204,
   DeleteJobMutation,
   DeleteJobMutationResponse,
@@ -67,12 +105,25 @@ export type {
   DeleteSeriesPathParams,
 } from "./types/DeleteSeries.ts";
 export type {
+  DeleteServiceRecord204,
+  DeleteServiceRecordMutation,
+  DeleteServiceRecordMutationResponse,
+  DeleteServiceRecordPathParams,
+} from "./types/DeleteServiceRecord.ts";
+export type {
   EndSeries200,
   EndSeriesMutation,
   EndSeriesMutationRequest,
   EndSeriesMutationResponse,
   EndSeriesPathParams,
 } from "./types/EndSeries.ts";
+export type { EquipmentIn } from "./types/EquipmentIn.ts";
+export type { EquipmentOut } from "./types/EquipmentOut.ts";
+export type { EquipmentPhotoOut } from "./types/EquipmentPhotoOut.ts";
+export type {
+  EquipmentStatus,
+  EquipmentStatusEnumKey,
+} from "./types/EquipmentStatus.ts";
 export type { Frequency, FrequencyEnumKey } from "./types/Frequency.ts";
 export type {
   GeocodeClient200,
@@ -90,6 +141,12 @@ export type {
   GetClientQuery,
   GetClientQueryResponse,
 } from "./types/GetClient.ts";
+export type {
+  GetEquipment200,
+  GetEquipmentPathParams,
+  GetEquipmentQuery,
+  GetEquipmentQueryResponse,
+} from "./types/GetEquipment.ts";
 export type {
   GetMe200,
   GetMeQuery,
@@ -114,6 +171,7 @@ export type {
 export type { HealthOut } from "./types/HealthOut.ts";
 export type { JobIn } from "./types/JobIn.ts";
 export type { JobOut } from "./types/JobOut.ts";
+export type { JobStatus, JobStatusEnumKey } from "./types/JobStatus.ts";
 export type { JobUpdateIn } from "./types/JobUpdateIn.ts";
 export type { LatLng } from "./types/LatLng.ts";
 export type {
@@ -123,11 +181,28 @@ export type {
   ListClientsQueryResponse,
 } from "./types/ListClients.ts";
 export type {
+  ListEquipment200,
+  ListEquipmentQuery,
+  ListEquipmentQueryParams,
+  ListEquipmentQueryResponse,
+} from "./types/ListEquipment.ts";
+export type {
   ListJobs200,
   ListJobsQuery,
   ListJobsQueryParams,
   ListJobsQueryResponse,
 } from "./types/ListJobs.ts";
+export type {
+  ListNotifications200,
+  ListNotificationsQuery,
+  ListNotificationsQueryParams,
+  ListNotificationsQueryResponse,
+} from "./types/ListNotifications.ts";
+export type {
+  ListReminders200,
+  ListRemindersQuery,
+  ListRemindersQueryResponse,
+} from "./types/ListReminders.ts";
 export type {
   ListSeries200,
   ListSeriesQuery,
@@ -135,13 +210,42 @@ export type {
   ListSeriesQueryResponse,
 } from "./types/ListSeries.ts";
 export type {
+  LogService201,
+  LogServiceMutation,
+  LogServiceMutationRequest,
+  LogServiceMutationResponse,
+  LogServicePathParams,
+} from "./types/LogService.ts";
+export type {
+  MarkAllNotificationsRead204,
+  MarkAllNotificationsReadMutation,
+  MarkAllNotificationsReadMutationResponse,
+} from "./types/MarkAllNotificationsRead.ts";
+export type {
+  MarkNotificationRead200,
+  MarkNotificationReadMutation,
+  MarkNotificationReadMutationResponse,
+  MarkNotificationReadPathParams,
+} from "./types/MarkNotificationRead.ts";
+export type { NotificationOut } from "./types/NotificationOut.ts";
+export type {
   OptimizeRoute200,
   OptimizeRouteMutation,
   OptimizeRouteMutationRequest,
   OptimizeRouteMutationResponse,
 } from "./types/OptimizeRoute.ts";
+export type { Platform, PlatformEnumKey } from "./types/Platform.ts";
 export type { ProfileIn } from "./types/ProfileIn.ts";
 export type { ProfileOut } from "./types/ProfileOut.ts";
+export type { PushDeviceIn } from "./types/PushDeviceIn.ts";
+export type { PushDeviceOut } from "./types/PushDeviceOut.ts";
+export type {
+  RegisterPushDevice201,
+  RegisterPushDeviceMutation,
+  RegisterPushDeviceMutationRequest,
+  RegisterPushDeviceMutationResponse,
+} from "./types/RegisterPushDevice.ts";
+export type { ReminderOut } from "./types/ReminderOut.ts";
 export type {
   ReorderRoute200,
   ReorderRouteMutation,
@@ -152,11 +256,23 @@ export type { RouteOptimizeIn } from "./types/RouteOptimizeIn.ts";
 export type { RoutePlanOut } from "./types/RoutePlanOut.ts";
 export type { RouteReorderIn } from "./types/RouteReorderIn.ts";
 export type { RouteStopOut } from "./types/RouteStopOut.ts";
+export type {
+  RunReminders200,
+  RunRemindersMutation,
+  RunRemindersMutationResponse,
+} from "./types/RunReminders.ts";
 export type { SeriesEndIn } from "./types/SeriesEndIn.ts";
 export type { SeriesIn } from "./types/SeriesIn.ts";
 export type { SeriesOut } from "./types/SeriesOut.ts";
 export type { SeriesUpdateIn } from "./types/SeriesUpdateIn.ts";
-export type { Status, StatusEnumKey } from "./types/Status.ts";
+export type { ServiceRecordIn } from "./types/ServiceRecordIn.ts";
+export type { ServiceRecordOut } from "./types/ServiceRecordOut.ts";
+export type {
+  UnregisterPushDevice204,
+  UnregisterPushDeviceMutation,
+  UnregisterPushDeviceMutationResponse,
+  UnregisterPushDevicePathParams,
+} from "./types/UnregisterPushDevice.ts";
 export type {
   UpdateClient200,
   UpdateClientMutation,
@@ -164,6 +280,13 @@ export type {
   UpdateClientMutationResponse,
   UpdateClientPathParams,
 } from "./types/UpdateClient.ts";
+export type {
+  UpdateEquipment200,
+  UpdateEquipmentMutation,
+  UpdateEquipmentMutationRequest,
+  UpdateEquipmentMutationResponse,
+  UpdateEquipmentPathParams,
+} from "./types/UpdateEquipment.ts";
 export type {
   UpdateJob200,
   UpdateJobMutation,
@@ -185,32 +308,58 @@ export type {
   UpdateSeriesPathParams,
   UpdateSeriesQueryParams,
 } from "./types/UpdateSeries.ts";
+export type {
+  UploadEquipmentPhoto201,
+  UploadEquipmentPhotoMutation,
+  UploadEquipmentPhotoMutationRequest,
+  UploadEquipmentPhotoMutationResponse,
+  UploadEquipmentPhotoPathParams,
+} from "./types/UploadEquipmentPhoto.ts";
 export type { UserOut } from "./types/UserOut.ts";
 export { createClient } from "./clients/createClient.ts";
+export { createEquipment } from "./clients/createEquipment.ts";
 export { createJob } from "./clients/createJob.ts";
 export { createSeries } from "./clients/createSeries.ts";
 export { deleteClient } from "./clients/deleteClient.ts";
+export { deleteEquipment } from "./clients/deleteEquipment.ts";
+export { deleteEquipmentPhoto } from "./clients/deleteEquipmentPhoto.ts";
 export { deleteJob } from "./clients/deleteJob.ts";
 export { deleteSeries } from "./clients/deleteSeries.ts";
+export { deleteServiceRecord } from "./clients/deleteServiceRecord.ts";
 export { endSeries } from "./clients/endSeries.ts";
 export { geocodeClient } from "./clients/geocodeClient.ts";
 export { getClient } from "./clients/getClient.ts";
+export { getEquipment } from "./clients/getEquipment.ts";
 export { getMe } from "./clients/getMe.ts";
 export { getProfile } from "./clients/getProfile.ts";
 export { getRoutePlan } from "./clients/getRoutePlan.ts";
 export { health } from "./clients/health.ts";
 export { listClients } from "./clients/listClients.ts";
+export { listEquipment } from "./clients/listEquipment.ts";
 export { listJobs } from "./clients/listJobs.ts";
+export { listNotifications } from "./clients/listNotifications.ts";
+export { listReminders } from "./clients/listReminders.ts";
 export { listSeries } from "./clients/listSeries.ts";
+export { logService } from "./clients/logService.ts";
+export { markAllNotificationsRead } from "./clients/markAllNotificationsRead.ts";
+export { markNotificationRead } from "./clients/markNotificationRead.ts";
 export { optimizeRoute } from "./clients/optimizeRoute.ts";
+export { registerPushDevice } from "./clients/registerPushDevice.ts";
 export { reorderRoute } from "./clients/reorderRoute.ts";
+export { runReminders } from "./clients/runReminders.ts";
+export { unregisterPushDevice } from "./clients/unregisterPushDevice.ts";
 export { updateClient } from "./clients/updateClient.ts";
+export { updateEquipment } from "./clients/updateEquipment.ts";
 export { updateJob } from "./clients/updateJob.ts";
 export { updateProfile } from "./clients/updateProfile.ts";
 export { updateSeries } from "./clients/updateSeries.ts";
+export { uploadEquipmentPhoto } from "./clients/uploadEquipmentPhoto.ts";
 export { createClientMutationKey } from "./hooks/useCreateClient.ts";
 export { createClientMutationOptions } from "./hooks/useCreateClient.ts";
 export { useCreateClient } from "./hooks/useCreateClient.ts";
+export { createEquipmentMutationKey } from "./hooks/useCreateEquipment.ts";
+export { createEquipmentMutationOptions } from "./hooks/useCreateEquipment.ts";
+export { useCreateEquipment } from "./hooks/useCreateEquipment.ts";
 export { createJobMutationKey } from "./hooks/useCreateJob.ts";
 export { createJobMutationOptions } from "./hooks/useCreateJob.ts";
 export { useCreateJob } from "./hooks/useCreateJob.ts";
@@ -220,12 +369,21 @@ export { useCreateSeries } from "./hooks/useCreateSeries.ts";
 export { deleteClientMutationKey } from "./hooks/useDeleteClient.ts";
 export { deleteClientMutationOptions } from "./hooks/useDeleteClient.ts";
 export { useDeleteClient } from "./hooks/useDeleteClient.ts";
+export { deleteEquipmentMutationKey } from "./hooks/useDeleteEquipment.ts";
+export { deleteEquipmentMutationOptions } from "./hooks/useDeleteEquipment.ts";
+export { useDeleteEquipment } from "./hooks/useDeleteEquipment.ts";
+export { deleteEquipmentPhotoMutationKey } from "./hooks/useDeleteEquipmentPhoto.ts";
+export { deleteEquipmentPhotoMutationOptions } from "./hooks/useDeleteEquipmentPhoto.ts";
+export { useDeleteEquipmentPhoto } from "./hooks/useDeleteEquipmentPhoto.ts";
 export { deleteJobMutationKey } from "./hooks/useDeleteJob.ts";
 export { deleteJobMutationOptions } from "./hooks/useDeleteJob.ts";
 export { useDeleteJob } from "./hooks/useDeleteJob.ts";
 export { deleteSeriesMutationKey } from "./hooks/useDeleteSeries.ts";
 export { deleteSeriesMutationOptions } from "./hooks/useDeleteSeries.ts";
 export { useDeleteSeries } from "./hooks/useDeleteSeries.ts";
+export { deleteServiceRecordMutationKey } from "./hooks/useDeleteServiceRecord.ts";
+export { deleteServiceRecordMutationOptions } from "./hooks/useDeleteServiceRecord.ts";
+export { useDeleteServiceRecord } from "./hooks/useDeleteServiceRecord.ts";
 export { endSeriesMutationKey } from "./hooks/useEndSeries.ts";
 export { endSeriesMutationOptions } from "./hooks/useEndSeries.ts";
 export { useEndSeries } from "./hooks/useEndSeries.ts";
@@ -238,6 +396,12 @@ export { useGetClient } from "./hooks/useGetClient.ts";
 export { getClientSuspenseQueryKey } from "./hooks/useGetClientSuspense.ts";
 export { getClientSuspenseQueryOptions } from "./hooks/useGetClientSuspense.ts";
 export { useGetClientSuspense } from "./hooks/useGetClientSuspense.ts";
+export { getEquipmentQueryKey } from "./hooks/useGetEquipment.ts";
+export { getEquipmentQueryOptions } from "./hooks/useGetEquipment.ts";
+export { useGetEquipment } from "./hooks/useGetEquipment.ts";
+export { getEquipmentSuspenseQueryKey } from "./hooks/useGetEquipmentSuspense.ts";
+export { getEquipmentSuspenseQueryOptions } from "./hooks/useGetEquipmentSuspense.ts";
+export { useGetEquipmentSuspense } from "./hooks/useGetEquipmentSuspense.ts";
 export { getMeQueryKey } from "./hooks/useGetMe.ts";
 export { getMeQueryOptions } from "./hooks/useGetMe.ts";
 export { useGetMe } from "./hooks/useGetMe.ts";
@@ -268,27 +432,66 @@ export { useListClients } from "./hooks/useListClients.ts";
 export { listClientsSuspenseQueryKey } from "./hooks/useListClientsSuspense.ts";
 export { listClientsSuspenseQueryOptions } from "./hooks/useListClientsSuspense.ts";
 export { useListClientsSuspense } from "./hooks/useListClientsSuspense.ts";
+export { listEquipmentQueryKey } from "./hooks/useListEquipment.ts";
+export { listEquipmentQueryOptions } from "./hooks/useListEquipment.ts";
+export { useListEquipment } from "./hooks/useListEquipment.ts";
+export { listEquipmentSuspenseQueryKey } from "./hooks/useListEquipmentSuspense.ts";
+export { listEquipmentSuspenseQueryOptions } from "./hooks/useListEquipmentSuspense.ts";
+export { useListEquipmentSuspense } from "./hooks/useListEquipmentSuspense.ts";
 export { listJobsQueryKey } from "./hooks/useListJobs.ts";
 export { listJobsQueryOptions } from "./hooks/useListJobs.ts";
 export { useListJobs } from "./hooks/useListJobs.ts";
 export { listJobsSuspenseQueryKey } from "./hooks/useListJobsSuspense.ts";
 export { listJobsSuspenseQueryOptions } from "./hooks/useListJobsSuspense.ts";
 export { useListJobsSuspense } from "./hooks/useListJobsSuspense.ts";
+export { listNotificationsQueryKey } from "./hooks/useListNotifications.ts";
+export { listNotificationsQueryOptions } from "./hooks/useListNotifications.ts";
+export { useListNotifications } from "./hooks/useListNotifications.ts";
+export { listNotificationsSuspenseQueryKey } from "./hooks/useListNotificationsSuspense.ts";
+export { listNotificationsSuspenseQueryOptions } from "./hooks/useListNotificationsSuspense.ts";
+export { useListNotificationsSuspense } from "./hooks/useListNotificationsSuspense.ts";
+export { listRemindersQueryKey } from "./hooks/useListReminders.ts";
+export { listRemindersQueryOptions } from "./hooks/useListReminders.ts";
+export { useListReminders } from "./hooks/useListReminders.ts";
+export { listRemindersSuspenseQueryKey } from "./hooks/useListRemindersSuspense.ts";
+export { listRemindersSuspenseQueryOptions } from "./hooks/useListRemindersSuspense.ts";
+export { useListRemindersSuspense } from "./hooks/useListRemindersSuspense.ts";
 export { listSeriesQueryKey } from "./hooks/useListSeries.ts";
 export { listSeriesQueryOptions } from "./hooks/useListSeries.ts";
 export { useListSeries } from "./hooks/useListSeries.ts";
 export { listSeriesSuspenseQueryKey } from "./hooks/useListSeriesSuspense.ts";
 export { listSeriesSuspenseQueryOptions } from "./hooks/useListSeriesSuspense.ts";
 export { useListSeriesSuspense } from "./hooks/useListSeriesSuspense.ts";
+export { logServiceMutationKey } from "./hooks/useLogService.ts";
+export { logServiceMutationOptions } from "./hooks/useLogService.ts";
+export { useLogService } from "./hooks/useLogService.ts";
+export { markAllNotificationsReadMutationKey } from "./hooks/useMarkAllNotificationsRead.ts";
+export { markAllNotificationsReadMutationOptions } from "./hooks/useMarkAllNotificationsRead.ts";
+export { useMarkAllNotificationsRead } from "./hooks/useMarkAllNotificationsRead.ts";
+export { markNotificationReadMutationKey } from "./hooks/useMarkNotificationRead.ts";
+export { markNotificationReadMutationOptions } from "./hooks/useMarkNotificationRead.ts";
+export { useMarkNotificationRead } from "./hooks/useMarkNotificationRead.ts";
 export { optimizeRouteMutationKey } from "./hooks/useOptimizeRoute.ts";
 export { optimizeRouteMutationOptions } from "./hooks/useOptimizeRoute.ts";
 export { useOptimizeRoute } from "./hooks/useOptimizeRoute.ts";
+export { registerPushDeviceMutationKey } from "./hooks/useRegisterPushDevice.ts";
+export { registerPushDeviceMutationOptions } from "./hooks/useRegisterPushDevice.ts";
+export { useRegisterPushDevice } from "./hooks/useRegisterPushDevice.ts";
 export { reorderRouteMutationKey } from "./hooks/useReorderRoute.ts";
 export { reorderRouteMutationOptions } from "./hooks/useReorderRoute.ts";
 export { useReorderRoute } from "./hooks/useReorderRoute.ts";
+export { runRemindersMutationKey } from "./hooks/useRunReminders.ts";
+export { runRemindersMutationOptions } from "./hooks/useRunReminders.ts";
+export { useRunReminders } from "./hooks/useRunReminders.ts";
+export { unregisterPushDeviceMutationKey } from "./hooks/useUnregisterPushDevice.ts";
+export { unregisterPushDeviceMutationOptions } from "./hooks/useUnregisterPushDevice.ts";
+export { useUnregisterPushDevice } from "./hooks/useUnregisterPushDevice.ts";
 export { updateClientMutationKey } from "./hooks/useUpdateClient.ts";
 export { updateClientMutationOptions } from "./hooks/useUpdateClient.ts";
 export { useUpdateClient } from "./hooks/useUpdateClient.ts";
+export { updateEquipmentMutationKey } from "./hooks/useUpdateEquipment.ts";
+export { updateEquipmentMutationOptions } from "./hooks/useUpdateEquipment.ts";
+export { useUpdateEquipment } from "./hooks/useUpdateEquipment.ts";
 export { updateJobMutationKey } from "./hooks/useUpdateJob.ts";
 export { updateJobMutationOptions } from "./hooks/useUpdateJob.ts";
 export { useUpdateJob } from "./hooks/useUpdateJob.ts";
@@ -298,6 +501,11 @@ export { useUpdateProfile } from "./hooks/useUpdateProfile.ts";
 export { updateSeriesMutationKey } from "./hooks/useUpdateSeries.ts";
 export { updateSeriesMutationOptions } from "./hooks/useUpdateSeries.ts";
 export { useUpdateSeries } from "./hooks/useUpdateSeries.ts";
+export { uploadEquipmentPhotoMutationKey } from "./hooks/useUploadEquipmentPhoto.ts";
+export { uploadEquipmentPhotoMutationOptions } from "./hooks/useUploadEquipmentPhoto.ts";
+export { useUploadEquipmentPhoto } from "./hooks/useUploadEquipmentPhoto.ts";
+export { equipmentStatusEnum } from "./types/EquipmentStatus.ts";
 export { frequencyEnum } from "./types/Frequency.ts";
 export { geocodeStatusEnum } from "./types/GeocodeStatus.ts";
-export { statusEnum } from "./types/Status.ts";
+export { jobStatusEnum } from "./types/JobStatus.ts";
+export { platformEnum } from "./types/Platform.ts";

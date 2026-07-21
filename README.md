@@ -18,7 +18,26 @@ order.
   the order by driving time (OSRM + nearest-neighbor/2-opt, straight-line
   fallback when offline), manual re-ordering, per-stop done/skip/paid, day
   revenue totals, and an "Open in Google Maps" link for turn-by-turn.
-- **Settings** — business name and home address (route start point).
+- **Tools & equipment** — mowers, trimmers, trailers with photos, serial
+  numbers, purchase dates, notes, and a servicing contact (who to call).
+  Set a service interval and log services; the app computes when the next
+  one is due.
+- **Reminders & notifications** — equipment due (or overdue) for service
+  surfaces in the in-app notification bell and through a mocked push
+  pipeline: `core/services/notifications.send_push` writes to a
+  Notification outbox and logs what a real push would send. The future
+  React Native app registers its FCM/APNs token via `POST /api/devices`;
+  only the transport inside `send_push` needs wiring up. Run
+  `manage.py send_due_reminders` daily (cron) to generate reminders, or
+  use the bell's "Check now" button.
+- **Settings** — business name and home address (route start point), plus
+  account management: change/set password, email verification status with
+  resend, and Google account connect/disconnect.
+- **Auth flows** — email+password registration with verification emails
+  (optional-but-nagging by default; set `ACCOUNT_EMAIL_VERIFICATION=mandatory`
+  to block unverified logins), forgot/reset password, and Google social
+  login. Social-only accounts can set a password later; accounts can link
+  and unlink Google in Settings.
 
 Tech stack:
 
@@ -87,6 +106,13 @@ rate, overridable), paid flag and notes, so history is never lost:
 - "Edit series from this date" regenerates only future scheduled, untouched
   occurrences.
 - Ending a series keeps everything on/before the end date.
+
+## Emails in development
+
+The dev stack uses Django's console email backend: verification and
+password-reset emails are printed to the backend logs (`just logs backend`)
+instead of being sent. Click the link straight from the log output. Set
+`DJANGO_EMAIL_BACKEND` + SMTP env vars for real delivery.
 
 ## Geocoding & routing
 

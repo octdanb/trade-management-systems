@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import type { Status } from "./Status.ts";
+import type { JobStatus } from "./JobStatus.ts";
 
 /**
  * JobUpdateIn
@@ -13,7 +13,7 @@ export type JobUpdateIn = {
   scheduled_date?: string | null;
   scheduled_time?: string | null;
   duration_minutes?: number | null;
-  status?: Status | null;
+  status?: JobStatus | null;
   price?: number | string | null;
   paid?: boolean | null;
   notes?: string | null;

@@ -26,6 +26,7 @@ export default defineConfig({
       '/accounts': backendUrl,
       '/admin': backendUrl,
       '/static': backendUrl,
+      '/media': backendUrl,
     },
   },
 })

@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
@@ -12,3 +14,8 @@ urlpatterns = [
     # routes (e.g. /accounts/google/login/callback/).
     path("accounts/", include("allauth.urls")),
 ]
+
+if settings.DEBUG:
+    # Uploaded equipment photos; in production put these behind a real file
+    # store / CDN instead.
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
