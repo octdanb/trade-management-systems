@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { TimeField } from '@/components/time-field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -87,14 +88,13 @@ export function SeriesForm({
           />
         </div>
       )}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="sf-time">Time (optional)</Label>
-          <Input
+          <TimeField
             id="sf-time"
-            type="time"
             value={values.default_time}
-            onChange={(e) => set('default_time', e.target.value)}
+            onChange={(v) => set('default_time', v)}
           />
         </div>
         <div className="grid gap-2">

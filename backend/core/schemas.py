@@ -32,6 +32,27 @@ class ClientIn(Schema):
     is_active: bool = True
 
 
+class ClientNoteIn(Schema):
+    body: str
+
+
+class ClientNoteOut(Schema):
+    id: int
+    body: str
+    created_at: datetime
+
+
+class ClientPhotoOut(Schema):
+    id: int
+    url: str
+    caption: str
+    uploaded_at: datetime
+
+    @staticmethod
+    def resolve_url(obj):
+        return obj.image.url
+
+
 class ClientOut(Schema):
     id: int
     name: str
@@ -47,6 +68,16 @@ class ClientOut(Schema):
     geocode_status: GeocodeStatus
     created_at: datetime
     updated_at: datetime
+    note_entries: list[ClientNoteOut]
+    photos: list[ClientPhotoOut]
+
+    @staticmethod
+    def resolve_note_entries(obj):
+        return obj.note_entries.all()
+
+    @staticmethod
+    def resolve_photos(obj):
+        return obj.photos.all()
 
 
 # --- Business profile --------------------------------------------------------
@@ -106,13 +137,25 @@ class SeriesEndIn(Schema):
 # --- Jobs --------------------------------------------------------------------
 
 
+class JobPhotoOut(Schema):
+    id: int
+    url: str
+    caption: str
+    uploaded_at: datetime
+
+    @staticmethod
+    def resolve_url(obj):
+        return obj.image.url
+
+
 class JobIn(Schema):
-    """A one-off job. Series occurrences are created via the series endpoints."""
+    """A one-off job or quote. Series occurrences are created via the series endpoints."""
 
     client_id: int
     scheduled_date: date
     scheduled_time: time | None = None
     duration_minutes: int = 60
+    kind: Job.Kind = Job.Kind.JOB
     price: Decimal | None = None  # defaults to the client's rate
     notes: str = ""
 
@@ -123,6 +166,7 @@ class JobUpdateIn(Schema):
     scheduled_date: date | None = None
     scheduled_time: time | None = None
     duration_minutes: int | None = None
+    kind: Job.Kind | None = None  # e.g. flip a quote into a job once accepted
     status: Job.Status | None = None
     price: Decimal | None = None
     paid: bool | None = None
@@ -137,15 +181,21 @@ class JobOut(Schema):
     scheduled_date: date
     scheduled_time: time | None
     duration_minutes: int
+    kind: Job.Kind
     status: Job.Status
     price: Decimal
     paid: bool
     notes: str
     route_order: int | None
+    photos: list[JobPhotoOut]
 
     @staticmethod
     def resolve_client_name(obj):
         return obj.client.name
+
+    @staticmethod
+    def resolve_photos(obj):
+        return obj.photos.all()
 
 
 # --- Route planning ----------------------------------------------------------

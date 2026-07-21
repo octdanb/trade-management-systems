@@ -1,13 +1,15 @@
 from datetime import date, timedelta
 
 from django.shortcuts import get_object_or_404
-from ninja import Router
+from ninja import File, Form, Router
 from ninja.errors import HttpError
+from ninja.files import UploadedFile
 
-from core.models import AppointmentSeries, Client, Job
+from core.models import AppointmentSeries, Client, Job, JobPhoto
 from core.schemas import (
     JobIn,
     JobOut,
+    JobPhotoOut,
     JobUpdateIn,
     SeriesEndIn,
     SeriesIn,
@@ -78,15 +80,20 @@ def list_jobs(
     end: date,
     client_id: int | None = None,
     status: Job.Status | None = None,
+    kind: Job.Kind | None = None,
 ):
     occurrences.ensure_range(request.auth, end)
-    qs = Job.objects.filter(
-        user=request.auth, scheduled_date__gte=start, scheduled_date__lte=end
-    ).select_related("client")
+    qs = (
+        Job.objects.filter(user=request.auth, scheduled_date__gte=start, scheduled_date__lte=end)
+        .select_related("client")
+        .prefetch_related("photos")
+    )
     if client_id is not None:
         qs = qs.filter(client_id=client_id)
     if status is not None:
         qs = qs.filter(status=status)
+    if kind is not None:
+        qs = qs.filter(kind=kind)
     return qs
 
 
@@ -99,6 +106,7 @@ def create_job(request, payload: JobIn):
         scheduled_date=payload.scheduled_date,
         scheduled_time=payload.scheduled_time,
         duration_minutes=payload.duration_minutes,
+        kind=payload.kind,
         price=payload.price if payload.price is not None else client.rate,
         notes=payload.notes,
     )
@@ -122,5 +130,36 @@ def delete_job(request, job_id: int):
     job = get_object_or_404(Job, id=job_id, user=request.auth)
     if job.series_id is not None:
         raise HttpError(400, "Series occurrences can't be deleted — cancel them instead.")
+    for photo in job.photos.all():
+        photo.image.delete(save=False)
     job.delete()
+    return 204, None
+
+
+@router.post(
+    "/jobs/{job_id}/photos",
+    response={201: JobPhotoOut},
+    operation_id="uploadJobPhoto",
+)
+def upload_job_photo(
+    request,
+    job_id: int,
+    file: UploadedFile = File(...),
+    caption: Form[str] = "",
+):
+    job = get_object_or_404(Job, id=job_id, user=request.auth)
+    photo = JobPhoto.objects.create(job=job, image=file, caption=caption)
+    return 201, photo
+
+
+@router.delete(
+    "/jobs/{job_id}/photos/{photo_id}",
+    response={204: None},
+    operation_id="deleteJobPhoto",
+)
+def delete_job_photo(request, job_id: int, photo_id: int):
+    job = get_object_or_404(Job, id=job_id, user=request.auth)
+    photo = get_object_or_404(JobPhoto, id=photo_id, job=job)
+    photo.image.delete(save=False)
+    photo.delete()
     return 204, None

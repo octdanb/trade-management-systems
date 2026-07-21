@@ -55,6 +55,27 @@ class Client(models.Model):
         return self.name
 
 
+class ClientNote(models.Model):
+    """A dated note in a client's log (separate from the free-form Client.notes)."""
+
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="note_entries")
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class ClientPhoto(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="photos")
+    image = models.ImageField(upload_to="clients/%Y/%m/")
+    caption = models.CharField(max_length=200, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+
 class AppointmentSeries(models.Model):
     class Frequency(models.TextChoices):
         WEEKLY = "weekly", "Weekly"
@@ -100,10 +121,16 @@ class JobStatus(models.TextChoices):
     CANCELLED = "cancelled", "Cancelled"
 
 
+class JobKind(models.TextChoices):
+    JOB = "job", "Job"
+    QUOTE = "quote", "Quote"
+
+
 class Job(models.Model):
     """A single visit — either a one-off or a materialized series occurrence."""
 
     Status = JobStatus
+    Kind = JobKind
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="jobs"
@@ -118,6 +145,8 @@ class Job(models.Model):
     # The series slot this occurrence was generated for; survives rescheduling
     # so regeneration can never duplicate a moved/cancelled occurrence.
     original_date = models.DateField(null=True, blank=True)
+    # A regular visit or a quote appointment (site visit to price the work).
+    kind = models.CharField(max_length=10, choices=Kind.choices, default=Kind.JOB)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.SCHEDULED)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     paid = models.BooleanField(default=False)
@@ -141,6 +170,18 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.client} on {self.scheduled_date} ({self.status})"
+
+
+class JobPhoto(models.Model):
+    """A photo attached to a job or quote (site conditions, finished work, ...)."""
+
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="photos")
+    image = models.ImageField(upload_to="jobs/%Y/%m/")
+    caption = models.CharField(max_length=200, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
 
 
 class EquipmentStatus(models.TextChoices):

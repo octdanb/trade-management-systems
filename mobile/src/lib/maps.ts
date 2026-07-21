@@ -20,3 +20,8 @@ export function googleMapsDirectionsUrl(home: LatLng | null, stops: RouteStopOut
   }
   return `https://www.google.com/maps/dir/?${params.toString()}`
 }
+
+/** Google Maps search link for a plain address (opens the maps app). */
+export function googleMapsSearchUrl(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+}

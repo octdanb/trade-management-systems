@@ -3,6 +3,8 @@
  * Do not edit manually.
  */
 
+import type { ClientNoteOut } from "./ClientNoteOut.ts";
+import type { ClientPhotoOut } from "./ClientPhotoOut.ts";
 import type { GeocodeStatus } from "./GeocodeStatus.ts";
 
 /**
@@ -61,4 +63,12 @@ export type ClientOut = {
    * @type string, date-time
    */
   updated_at: string;
+  /**
+   * @type array
+   */
+  note_entries: ClientNoteOut[];
+  /**
+   * @type array
+   */
+  photos: ClientPhotoOut[];
 };

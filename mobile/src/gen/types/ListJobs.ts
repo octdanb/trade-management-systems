@@ -3,6 +3,7 @@
  * Do not edit manually.
  */
 
+import type { JobKind } from "./JobKind.ts";
 import type { JobOut } from "./JobOut.ts";
 import type { JobStatus } from "./JobStatus.ts";
 
@@ -17,6 +18,7 @@ export type ListJobsQueryParams = {
   end: string;
   client_id?: number | null;
   status?: JobStatus | null;
+  kind?: JobKind | null;
 };
 
 /**

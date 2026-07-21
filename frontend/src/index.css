@@ -130,3 +130,8 @@
   color: var(--muted-foreground);
   text-decoration: line-through;
 }
+.fc .fc-event.job-kind-quote {
+  background: var(--background);
+  border: 1.5px dashed var(--primary);
+  color: var(--foreground);
+}

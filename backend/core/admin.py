@@ -1,6 +1,30 @@
 from django.contrib import admin
 
-from core.models import AppBuild, AppointmentSeries, BusinessProfile, Client, Job
+from core.models import (
+    AppBuild,
+    AppointmentSeries,
+    BusinessProfile,
+    Client,
+    ClientNote,
+    ClientPhoto,
+    Job,
+    JobPhoto,
+)
+
+
+class ClientNoteInline(admin.TabularInline):
+    model = ClientNote
+    extra = 0
+
+
+class ClientPhotoInline(admin.TabularInline):
+    model = ClientPhoto
+    extra = 0
+
+
+class JobPhotoInline(admin.TabularInline):
+    model = JobPhoto
+    extra = 0
 
 
 @admin.register(BusinessProfile)
@@ -22,6 +46,7 @@ class ClientAdmin(admin.ModelAdmin):
     )
     list_filter = ("is_active", "geocode_status")
     search_fields = ("name", "phone", "email", "address")
+    inlines = [ClientNoteInline, ClientPhotoInline]
 
 
 @admin.register(AppointmentSeries)
@@ -43,13 +68,15 @@ class JobAdmin(admin.ModelAdmin):
         "client",
         "scheduled_date",
         "scheduled_time",
+        "kind",
         "status",
         "price",
         "paid",
         "series",
     )
-    list_filter = ("status", "paid")
+    list_filter = ("kind", "status", "paid")
     date_hierarchy = "scheduled_date"
+    inlines = [JobPhotoInline]
 
 
 @admin.register(AppBuild)

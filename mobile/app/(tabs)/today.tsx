@@ -15,7 +15,7 @@ import {
   useReorderRoute,
   useUpdateJob,
 } from '../../src/gen'
-import { addDays, formatDuration, humanDate, todayString } from '../../src/lib/format'
+import { addDays, formatDuration, formatTime, humanDate, todayString } from '../../src/lib/format'
 import { googleMapsDirectionsUrl } from '../../src/lib/maps'
 import { JOBS_BASE_KEY, ROUTE_BASE_KEY } from '../../src/lib/query-keys'
 
@@ -193,19 +193,25 @@ function StopCard({
         <View className="flex-1">
           <Text className={`font-medium text-foreground ${done ? 'line-through' : ''}`}>
             {stop.client_name}
-            {stop.scheduled_time ? ` · ${stop.scheduled_time.slice(0, 5)}` : ''}
+            {stop.scheduled_time ? ` · ${formatTime(stop.scheduled_time)}` : ''}
           </Text>
           <Text className="text-xs text-muted-foreground" numberOfLines={1}>
             {stop.address || 'No address'}
             {stop.leg_duration_s != null && ` · ${formatDuration(stop.leg_duration_s)} drive`}
           </Text>
         </View>
-        <Text className="font-semibold text-foreground">${stop.price}</Text>
+        {stop.kind === 'quote' ? (
+          <Badge text="Quote" tone="amber" />
+        ) : (
+          <Text className="font-semibold text-foreground">${stop.price}</Text>
+        )}
       </View>
       <View className="mt-3 flex-row items-center gap-2">
-        <Pressable onPress={onTogglePaid}>
-          <Badge text={stop.paid ? 'Paid' : 'Unpaid'} tone={stop.paid ? 'green' : 'neutral'} />
-        </Pressable>
+        {stop.kind !== 'quote' && (
+          <Pressable onPress={onTogglePaid}>
+            <Badge text={stop.paid ? 'Paid' : 'Unpaid'} tone={stop.paid ? 'green' : 'neutral'} />
+          </Pressable>
+        )}
         {skipped && <Badge text="Skipped" tone="amber" />}
         <View className="flex-1" />
         {onMove && (

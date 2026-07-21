@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
+  jobKindEnum,
   jobStatusEnum,
   type RouteStopOut,
   useGetRoutePlan,
@@ -23,6 +24,7 @@ import {
   useReorderRoute,
   useUpdateJob,
 } from '@/gen'
+import { formatTime } from '@/lib/format'
 import { formatDuration, googleMapsDirectionsUrl } from '@/lib/maps'
 import { JOBS_BASE_KEY, ROUTE_BASE_KEY } from '@/lib/query-keys'
 import { cn } from '@/lib/utils'
@@ -182,6 +184,7 @@ function StopCard({
 }) {
   const done = stop.status === jobStatusEnum.completed
   const skipped = stop.status === jobStatusEnum.skipped
+  const isQuote = stop.kind === jobKindEnum.quote
 
   return (
     <Card className={cn('py-3', (done || skipped) && 'opacity-70')}>
@@ -194,7 +197,7 @@ function StopCard({
         <div className="min-w-0 flex-1">
           <p className={cn('truncate text-sm font-medium', done && 'line-through')}>
             {stop.client_name}
-            {stop.scheduled_time ? ` · ${stop.scheduled_time.slice(0, 5)}` : ''}
+            {stop.scheduled_time ? ` · ${formatTime(stop.scheduled_time)}` : ''}
           </p>
           <p className="truncate text-xs text-muted-foreground">
             {stop.address || 'No address'}
@@ -202,16 +205,22 @@ function StopCard({
           </p>
           {stop.notes && <p className="truncate text-xs text-muted-foreground">{stop.notes}</p>}
         </div>
-        <span className="text-sm font-medium tabular-nums">${stop.price}</span>
-        <Badge
-          variant={stop.paid ? 'secondary' : 'outline'}
-          className="cursor-pointer select-none"
-          onClick={onTogglePaid}
-          role="button"
-          aria-label={stop.paid ? 'Mark unpaid' : 'Mark paid'}
-        >
-          {stop.paid ? 'Paid' : 'Unpaid'}
-        </Badge>
+        {isQuote ? (
+          <Badge>Quote</Badge>
+        ) : (
+          <>
+            <span className="text-sm font-medium tabular-nums">${stop.price}</span>
+            <Badge
+              variant={stop.paid ? 'secondary' : 'outline'}
+              className="cursor-pointer select-none"
+              onClick={onTogglePaid}
+              role="button"
+              aria-label={stop.paid ? 'Mark unpaid' : 'Mark paid'}
+            >
+              {stop.paid ? 'Paid' : 'Unpaid'}
+            </Badge>
+          </>
+        )}
         {skipped && <Badge variant="outline">Skipped</Badge>}
         <div className="flex items-center gap-1">
           {onMoveUp || onMoveDown ? (

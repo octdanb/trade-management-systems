@@ -1,12 +1,22 @@
 export type { AppBuildOut } from "./AppBuildOut.ts";
 export type { ClientIn } from "./ClientIn.ts";
+export type { ClientNoteIn } from "./ClientNoteIn.ts";
+export type { ClientNoteOut } from "./ClientNoteOut.ts";
 export type { ClientOut } from "./ClientOut.ts";
+export type { ClientPhotoOut } from "./ClientPhotoOut.ts";
 export type {
   CreateClient201,
   CreateClientMutation,
   CreateClientMutationRequest,
   CreateClientMutationResponse,
 } from "./CreateClient.ts";
+export type {
+  CreateClientNote201,
+  CreateClientNoteMutation,
+  CreateClientNoteMutationRequest,
+  CreateClientNoteMutationResponse,
+  CreateClientNotePathParams,
+} from "./CreateClientNote.ts";
 export type {
   CreateEquipment201,
   CreateEquipmentMutation,
@@ -32,6 +42,18 @@ export type {
   DeleteClientPathParams,
 } from "./DeleteClient.ts";
 export type {
+  DeleteClientNote204,
+  DeleteClientNoteMutation,
+  DeleteClientNoteMutationResponse,
+  DeleteClientNotePathParams,
+} from "./DeleteClientNote.ts";
+export type {
+  DeleteClientPhoto204,
+  DeleteClientPhotoMutation,
+  DeleteClientPhotoMutationResponse,
+  DeleteClientPhotoPathParams,
+} from "./DeleteClientPhoto.ts";
+export type {
   DeleteEquipment204,
   DeleteEquipmentMutation,
   DeleteEquipmentMutationResponse,
@@ -49,6 +71,12 @@ export type {
   DeleteJobMutationResponse,
   DeleteJobPathParams,
 } from "./DeleteJob.ts";
+export type {
+  DeleteJobPhoto204,
+  DeleteJobPhotoMutation,
+  DeleteJobPhotoMutationResponse,
+  DeleteJobPhotoPathParams,
+} from "./DeleteJobPhoto.ts";
 export type {
   DeleteSeries204,
   DeleteSeriesMutation,
@@ -117,7 +145,9 @@ export type {
 export type { Health200, HealthQuery, HealthQueryResponse } from "./Health.ts";
 export type { HealthOut } from "./HealthOut.ts";
 export type { JobIn } from "./JobIn.ts";
+export type { JobKind, JobKindEnumKey } from "./JobKind.ts";
 export type { JobOut } from "./JobOut.ts";
+export type { JobPhotoOut } from "./JobPhotoOut.ts";
 export type { JobStatus, JobStatusEnumKey } from "./JobStatus.ts";
 export type { JobUpdateIn } from "./JobUpdateIn.ts";
 export type { LatLng } from "./LatLng.ts";
@@ -263,17 +293,32 @@ export type {
   UploadAppBuildMutationResponse,
 } from "./UploadAppBuild.ts";
 export type {
+  UploadClientPhoto201,
+  UploadClientPhotoMutation,
+  UploadClientPhotoMutationRequest,
+  UploadClientPhotoMutationResponse,
+  UploadClientPhotoPathParams,
+} from "./UploadClientPhoto.ts";
+export type {
   UploadEquipmentPhoto201,
   UploadEquipmentPhotoMutation,
   UploadEquipmentPhotoMutationRequest,
   UploadEquipmentPhotoMutationResponse,
   UploadEquipmentPhotoPathParams,
 } from "./UploadEquipmentPhoto.ts";
+export type {
+  UploadJobPhoto201,
+  UploadJobPhotoMutation,
+  UploadJobPhotoMutationRequest,
+  UploadJobPhotoMutationResponse,
+  UploadJobPhotoPathParams,
+} from "./UploadJobPhoto.ts";
 export type { UserOut } from "./UserOut.ts";
 export { equipmentStatusEnum } from "./EquipmentStatus.ts";
 export { frequencyEnum } from "./Frequency.ts";
 export { geocodeStatusEnum } from "./GeocodeStatus.ts";
 export { getLatestAppBuildQueryParamsPlatformEnum } from "./GetLatestAppBuild.ts";
+export { jobKindEnum } from "./JobKind.ts";
 export { jobStatusEnum } from "./JobStatus.ts";
 export { platformEnum } from "./Platform.ts";
 export { uploadAppBuildMutationRequestPlatformEnum } from "./UploadAppBuild.ts";

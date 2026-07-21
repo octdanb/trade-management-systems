@@ -9,6 +9,7 @@ import {
   useMarkNotificationRead,
   useRunReminders,
 } from '@/gen'
+import { formatDateTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 const NOTIFICATIONS_BASE_KEY = [{ url: '/api/notifications' }] as const
@@ -83,7 +84,7 @@ export function NotificationsBell() {
                 </span>
                 {n.body && <span className="text-xs text-muted-foreground">{n.body}</span>}
                 <span className="text-[10px] text-muted-foreground">
-                  {new Date(n.created_at).toLocaleString()}
+                  {formatDateTime(n.created_at)}
                 </span>
               </button>
             ))

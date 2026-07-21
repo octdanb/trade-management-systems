@@ -44,12 +44,15 @@ export function SchedulePage() {
         .filter((job) => job.status !== 'cancelled')
         .map((job) => ({
           id: String(job.id),
-          title: `${job.client_name} · $${job.price}`,
+          title:
+            job.kind === 'quote'
+              ? `Quote · ${job.client_name}`
+              : `${job.client_name} · $${job.price}`,
           start: job.scheduled_time
             ? `${job.scheduled_date}T${job.scheduled_time}`
             : job.scheduled_date,
           allDay: !job.scheduled_time,
-          classNames: [`job-${job.status}`, job.paid ? 'job-paid' : ''],
+          classNames: [`job-${job.status}`, job.paid ? 'job-paid' : '', `job-kind-${job.kind}`],
           extendedProps: { job },
         })),
     [jobs.data],
@@ -99,6 +102,8 @@ export function SchedulePage() {
           }}
           height="auto"
           firstDay={1}
+          eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }}
+          slotLabelFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }}
           editable
           dayMaxEventRows={4}
           events={events}

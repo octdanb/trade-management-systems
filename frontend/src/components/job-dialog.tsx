@@ -1,7 +1,10 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Camera, Trash2 } from 'lucide-react'
+import { useRef, useState } from 'react'
 
 import { SeriesForm } from '@/components/series-form'
+import { TimeField } from '@/components/time-field'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -22,17 +25,24 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import {
+  type JobKind,
   type JobOut,
+  type JobPhotoOut,
   type JobStatus,
+  jobKindEnum,
   jobStatusEnum,
   useCreateJob,
   useCreateSeries,
   useDeleteJob,
+  useDeleteJobPhoto,
   useListClients,
   useUpdateJob,
   useUpdateSeries,
 } from '@/gen'
+import { formatDate } from '@/lib/format'
+import { axiosInstance } from '@/lib/kubb-client'
 import { JOBS_BASE_KEY } from '@/lib/query-keys'
+import { cn } from '@/lib/utils'
 
 const STATUS_LABELS: Record<JobStatus, string> = {
   scheduled: 'Scheduled',
@@ -41,7 +51,7 @@ const STATUS_LABELS: Record<JobStatus, string> = {
   cancelled: 'Cancelled',
 }
 
-/** Create a one-off job or a new series, starting from a clicked date. */
+/** Create a one-off visit, a quote appointment, or a new series. */
 export function CreateJobDialog({
   date,
   open,
@@ -55,59 +65,102 @@ export function CreateJobDialog({
   const clients = useListClients({ active: true }, { query: { enabled: open } })
 
   const [clientId, setClientId] = useState<string>('')
+  const [kind, setKind] = useState<JobKind>(jobKindEnum.job)
   const [recurring, setRecurring] = useState(false)
   const [time, setTime] = useState('')
+  const [notes, setNotes] = useState('')
 
   const onDone = () => {
     queryClient.invalidateQueries({ queryKey: JOBS_BASE_KEY })
     onOpenChange(false)
     setClientId('')
+    setKind(jobKindEnum.job)
     setRecurring(false)
     setTime('')
+    setNotes('')
   }
 
   const createJob = useCreateJob({ mutation: { onSuccess: onDone } })
   const createSeries = useCreateSeries({ mutation: { onSuccess: onDone } })
 
-  const clientPicker = (
-    <div className="grid gap-2">
-      <Label>Client</Label>
-      <Select value={clientId} onValueChange={setClientId}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Pick a client" />
-        </SelectTrigger>
-        <SelectContent>
-          {clients.data?.map((c) => (
-            <SelectItem key={c.id} value={String(c.id)}>
-              {c.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {clients.data?.length === 0 && (
-        <p className="text-xs text-muted-foreground">No active clients yet — add one first.</p>
-      )}
-    </div>
-  )
+  const isQuote = kind === jobKindEnum.quote
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New appointment</DialogTitle>
-          <DialogDescription>{date}</DialogDescription>
+          <DialogDescription>{formatDate(date)}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
-          {clientPicker}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="jd-recurring"
-              checked={recurring}
-              onCheckedChange={(v) => setRecurring(v === true)}
-            />
-            <Label htmlFor="jd-recurring">Repeats</Label>
+          <div className="grid gap-2">
+            <Label>Client</Label>
+            <Select value={clientId} onValueChange={setClientId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pick a client" />
+              </SelectTrigger>
+              <SelectContent>
+                {clients.data?.map((c) => (
+                  <SelectItem key={c.id} value={String(c.id)}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {clients.data?.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                No active clients yet — add one first.
+              </p>
+            )}
           </div>
-          {recurring ? (
+
+          <div className="grid gap-2">
+            <Label>Type</Label>
+            <div className="flex overflow-hidden rounded-md border">
+              {(
+                [
+                  [jobKindEnum.job, 'Visit'],
+                  [jobKindEnum.quote, 'Quote'],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={cn(
+                    'flex-1 px-3 py-1.5 text-sm transition-colors',
+                    kind === value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-muted-foreground hover:bg-muted',
+                  )}
+                  onClick={() => {
+                    setKind(value)
+                    if (value === jobKindEnum.quote) setRecurring(false)
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {isQuote && (
+              <p className="text-xs text-muted-foreground">
+                A quote visit — no charge; add notes and photos, then convert it to a job when it's
+                accepted.
+              </p>
+            )}
+          </div>
+
+          {!isQuote && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="jd-recurring"
+                checked={recurring}
+                onCheckedChange={(v) => setRecurring(v === true)}
+              />
+              <Label htmlFor="jd-recurring">Repeats</Label>
+            </div>
+          )}
+
+          {recurring && !isQuote ? (
             <SeriesForm
               defaultStartDate={date}
               submitLabel="Create recurring appointment"
@@ -137,24 +190,37 @@ export function CreateJobDialog({
                     client_id: Number(clientId),
                     scheduled_date: date,
                     scheduled_time: time || null,
+                    kind,
+                    ...(isQuote ? { price: '0' } : {}),
+                    notes,
                   },
                 })
               }}
             >
               <div className="grid gap-2">
                 <Label htmlFor="jd-time">Time (optional)</Label>
-                <Input
-                  id="jd-time"
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                />
+                <TimeField id="jd-time" value={time} onChange={setTime} />
               </div>
+              {isQuote && (
+                <div className="grid gap-2">
+                  <Label htmlFor="jd-notes">Notes</Label>
+                  <Textarea
+                    id="jd-notes"
+                    placeholder="What they want quoted…"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </div>
+              )}
               {createJob.isError && (
                 <p className="text-sm text-destructive">Could not create the appointment.</p>
               )}
               <Button type="submit" disabled={createJob.isPending || !clientId}>
-                {createJob.isPending ? 'Creating…' : 'Create one-off visit'}
+                {createJob.isPending
+                  ? 'Creating…'
+                  : isQuote
+                    ? 'Create quote appointment'
+                    : 'Create one-off visit'}
               </Button>
             </form>
           )}
@@ -164,7 +230,7 @@ export function CreateJobDialog({
   )
 }
 
-/** Edit a single job occurrence: reschedule, price, status, paid, notes. */
+/** Edit a single job/quote: reschedule, price, status, paid, notes, photos. */
 export function EditJobDialog({
   job,
   open,
@@ -184,6 +250,7 @@ export function EditJobDialog({
   const [status, setStatus] = useState<JobStatus>(jobStatusEnum.scheduled)
   const [paid, setPaid] = useState(false)
   const [notes, setNotes] = useState('')
+  const [photos, setPhotos] = useState<JobPhotoOut[]>([])
   const [loadedJobId, setLoadedJobId] = useState<number | null>(null)
 
   // Sync form state when a (new) job is opened.
@@ -195,25 +262,55 @@ export function EditJobDialog({
     setStatus(job.status)
     setPaid(job.paid)
     setNotes(job.notes)
+    setPhotos(job.photos)
   }
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: JOBS_BASE_KEY })
   const onDone = () => {
-    queryClient.invalidateQueries({ queryKey: JOBS_BASE_KEY })
+    invalidate()
     onOpenChange(false)
   }
 
   const updateJob = useUpdateJob({ mutation: { onSuccess: onDone } })
+  const convertToJob = useUpdateJob({ mutation: { onSuccess: onDone } })
   const deleteJob = useDeleteJob({ mutation: { onSuccess: onDone } })
 
+  const fileInput = useRef<HTMLInputElement>(null)
+  const uploadPhoto = useMutation({
+    mutationFn: async (file: File) => {
+      const form = new FormData()
+      form.append('file', file)
+      const response = await axiosInstance.post<JobPhotoOut>(`/api/jobs/${job?.id}/photos`, form)
+      return response.data
+    },
+    onSuccess: (photo) => {
+      setPhotos((prev) => [photo, ...prev])
+      invalidate()
+    },
+  })
+  const deletePhoto = useDeleteJobPhoto({
+    mutation: {
+      onSuccess: (_data, variables) => {
+        setPhotos((prev) => prev.filter((p) => p.id !== variables.photo_id))
+        invalidate()
+      },
+    },
+  })
+
   if (!job) return null
+  const isQuote = job.kind === jobKindEnum.quote
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{job.client_name}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {job.client_name}
+            {isQuote && <Badge>Quote</Badge>}
+          </DialogTitle>
           <DialogDescription>
-            {job.series_id ? 'Recurring visit' : 'One-off visit'} · ${job.price}
+            {isQuote ? 'Quote appointment' : job.series_id ? 'Recurring visit' : 'One-off visit'}
+            {!isQuote && ` · $${job.price}`}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -246,17 +343,12 @@ export function EditJobDialog({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="ej-time">Time</Label>
-              <Input
-                id="ej-time"
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
+              <TimeField id="ej-time" value={time} onChange={setTime} />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="ej-price">Price ($)</Label>
+              <Label htmlFor="ej-price">{isQuote ? 'Quoted price ($)' : 'Price ($)'}</Label>
               <Input
                 id="ej-price"
                 type="number"
@@ -283,21 +375,102 @@ export function EditJobDialog({
               </Select>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="ej-paid" checked={paid} onCheckedChange={(v) => setPaid(v === true)} />
-            <Label htmlFor="ej-paid">Paid</Label>
-          </div>
+          {!isQuote && (
+            <div className="flex items-center gap-2">
+              <Checkbox id="ej-paid" checked={paid} onCheckedChange={(v) => setPaid(v === true)} />
+              <Label htmlFor="ej-paid">Paid</Label>
+            </div>
+          )}
           <div className="grid gap-2">
             <Label htmlFor="ej-notes">Notes</Label>
-            <Textarea id="ej-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <Textarea
+              id="ej-notes"
+              placeholder={isQuote ? 'Measurements, access, what they asked for…' : undefined}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
           </div>
-          {(updateJob.isError || deleteJob.isError) && (
+
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between">
+              <Label>Photos</Label>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={uploadPhoto.isPending}
+                onClick={() => fileInput.current?.click()}
+              >
+                <Camera /> {uploadPhoto.isPending ? 'Uploading…' : 'Add photo'}
+              </Button>
+            </div>
+            <input
+              ref={fileInput}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) uploadPhoto.mutate(file)
+                e.target.value = ''
+              }}
+            />
+            {uploadPhoto.isError && (
+              <p className="text-sm text-destructive">Upload failed. Try again.</p>
+            )}
+            {photos.length ? (
+              <div className="grid grid-cols-3 gap-2">
+                {photos.map((photo) => (
+                  <div key={photo.id} className="group relative">
+                    <a href={photo.url} target="_blank" rel="noreferrer">
+                      <img
+                        src={photo.url}
+                        alt={photo.caption || 'Job photo'}
+                        className="aspect-square w-full rounded-lg object-cover"
+                      />
+                    </a>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 size-6 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Delete photo"
+                      onClick={() => deletePhoto.mutate({ job_id: job.id, photo_id: photo.id })}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                {isQuote ? 'Snap the site so the quote writes itself later.' : 'No photos.'}
+              </p>
+            )}
+          </div>
+
+          {(updateJob.isError || deleteJob.isError || convertToJob.isError) && (
             <p className="text-sm text-destructive">Could not save the changes.</p>
           )}
           <div className="flex flex-col gap-2">
             <Button type="submit" disabled={updateJob.isPending}>
               {updateJob.isPending ? 'Saving…' : 'Save'}
             </Button>
+            {isQuote && (
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={convertToJob.isPending}
+                onClick={() =>
+                  convertToJob.mutate({
+                    job_id: job.id,
+                    data: { kind: jobKindEnum.job, price },
+                  })
+                }
+              >
+                {convertToJob.isPending ? 'Converting…' : 'Accepted — convert to job'}
+              </Button>
+            )}
             {job.series_id && onEditSeries ? (
               <Button type="button" variant="outline" onClick={() => onEditSeries(job)}>
                 Edit series from this date…
@@ -310,7 +483,7 @@ export function EditJobDialog({
                 disabled={deleteJob.isPending}
                 onClick={() => deleteJob.mutate({ job_id: job.id })}
               >
-                Delete visit
+                {isQuote ? 'Delete quote' : 'Delete visit'}
               </Button>
             )}
           </div>
@@ -348,8 +521,8 @@ export function EditSeriesDialog({
         <DialogHeader>
           <DialogTitle>Edit series</DialogTitle>
           <DialogDescription>
-            Changes apply to {job.client_name}'s visits from {job.scheduled_date} onward. Completed
-            and individually-moved visits are kept.
+            Changes apply to {job.client_name}'s visits from {formatDate(job.scheduled_date)}{' '}
+            onward. Completed and individually-moved visits are kept.
           </DialogDescription>
         </DialogHeader>
         <SeriesForm

@@ -3,9 +3,11 @@
  * Do not edit manually.
  */
 
+import type { JobKind } from "./JobKind.ts";
+
 /**
  * JobIn
- * @description A one-off job. Series occurrences are created via the series endpoints.
+ * @description A one-off job or quote. Series occurrences are created via the series endpoints.
  */
 export type JobIn = {
   /**
@@ -22,6 +24,10 @@ export type JobIn = {
    * @type integer | undefined
    */
   duration_minutes?: number;
+  /**
+   * @default "job"
+   */
+  kind?: JobKind;
   price?: number | string | null;
   /**
    * @default ""

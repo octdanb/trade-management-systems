@@ -1,11 +1,15 @@
 export type { CreateClientMutationKey } from "./hooks/useCreateClient.ts";
+export type { CreateClientNoteMutationKey } from "./hooks/useCreateClientNote.ts";
 export type { CreateEquipmentMutationKey } from "./hooks/useCreateEquipment.ts";
 export type { CreateJobMutationKey } from "./hooks/useCreateJob.ts";
 export type { CreateSeriesMutationKey } from "./hooks/useCreateSeries.ts";
 export type { DeleteClientMutationKey } from "./hooks/useDeleteClient.ts";
+export type { DeleteClientNoteMutationKey } from "./hooks/useDeleteClientNote.ts";
+export type { DeleteClientPhotoMutationKey } from "./hooks/useDeleteClientPhoto.ts";
 export type { DeleteEquipmentMutationKey } from "./hooks/useDeleteEquipment.ts";
 export type { DeleteEquipmentPhotoMutationKey } from "./hooks/useDeleteEquipmentPhoto.ts";
 export type { DeleteJobMutationKey } from "./hooks/useDeleteJob.ts";
+export type { DeleteJobPhotoMutationKey } from "./hooks/useDeleteJobPhoto.ts";
 export type { DeleteSeriesMutationKey } from "./hooks/useDeleteSeries.ts";
 export type { DeleteServiceRecordMutationKey } from "./hooks/useDeleteServiceRecord.ts";
 export type { EndSeriesMutationKey } from "./hooks/useEndSeries.ts";
@@ -50,16 +54,28 @@ export type { UpdateJobMutationKey } from "./hooks/useUpdateJob.ts";
 export type { UpdateProfileMutationKey } from "./hooks/useUpdateProfile.ts";
 export type { UpdateSeriesMutationKey } from "./hooks/useUpdateSeries.ts";
 export type { UploadAppBuildMutationKey } from "./hooks/useUploadAppBuild.ts";
+export type { UploadClientPhotoMutationKey } from "./hooks/useUploadClientPhoto.ts";
 export type { UploadEquipmentPhotoMutationKey } from "./hooks/useUploadEquipmentPhoto.ts";
+export type { UploadJobPhotoMutationKey } from "./hooks/useUploadJobPhoto.ts";
 export type { AppBuildOut } from "./types/AppBuildOut.ts";
 export type { ClientIn } from "./types/ClientIn.ts";
+export type { ClientNoteIn } from "./types/ClientNoteIn.ts";
+export type { ClientNoteOut } from "./types/ClientNoteOut.ts";
 export type { ClientOut } from "./types/ClientOut.ts";
+export type { ClientPhotoOut } from "./types/ClientPhotoOut.ts";
 export type {
   CreateClient201,
   CreateClientMutation,
   CreateClientMutationRequest,
   CreateClientMutationResponse,
 } from "./types/CreateClient.ts";
+export type {
+  CreateClientNote201,
+  CreateClientNoteMutation,
+  CreateClientNoteMutationRequest,
+  CreateClientNoteMutationResponse,
+  CreateClientNotePathParams,
+} from "./types/CreateClientNote.ts";
 export type {
   CreateEquipment201,
   CreateEquipmentMutation,
@@ -85,6 +101,18 @@ export type {
   DeleteClientPathParams,
 } from "./types/DeleteClient.ts";
 export type {
+  DeleteClientNote204,
+  DeleteClientNoteMutation,
+  DeleteClientNoteMutationResponse,
+  DeleteClientNotePathParams,
+} from "./types/DeleteClientNote.ts";
+export type {
+  DeleteClientPhoto204,
+  DeleteClientPhotoMutation,
+  DeleteClientPhotoMutationResponse,
+  DeleteClientPhotoPathParams,
+} from "./types/DeleteClientPhoto.ts";
+export type {
   DeleteEquipment204,
   DeleteEquipmentMutation,
   DeleteEquipmentMutationResponse,
@@ -102,6 +130,12 @@ export type {
   DeleteJobMutationResponse,
   DeleteJobPathParams,
 } from "./types/DeleteJob.ts";
+export type {
+  DeleteJobPhoto204,
+  DeleteJobPhotoMutation,
+  DeleteJobPhotoMutationResponse,
+  DeleteJobPhotoPathParams,
+} from "./types/DeleteJobPhoto.ts";
 export type {
   DeleteSeries204,
   DeleteSeriesMutation,
@@ -181,7 +215,9 @@ export type {
 } from "./types/Health.ts";
 export type { HealthOut } from "./types/HealthOut.ts";
 export type { JobIn } from "./types/JobIn.ts";
+export type { JobKind, JobKindEnumKey } from "./types/JobKind.ts";
 export type { JobOut } from "./types/JobOut.ts";
+export type { JobPhotoOut } from "./types/JobPhotoOut.ts";
 export type { JobStatus, JobStatusEnumKey } from "./types/JobStatus.ts";
 export type { JobUpdateIn } from "./types/JobUpdateIn.ts";
 export type { LatLng } from "./types/LatLng.ts";
@@ -327,21 +363,39 @@ export type {
   UploadAppBuildMutationResponse,
 } from "./types/UploadAppBuild.ts";
 export type {
+  UploadClientPhoto201,
+  UploadClientPhotoMutation,
+  UploadClientPhotoMutationRequest,
+  UploadClientPhotoMutationResponse,
+  UploadClientPhotoPathParams,
+} from "./types/UploadClientPhoto.ts";
+export type {
   UploadEquipmentPhoto201,
   UploadEquipmentPhotoMutation,
   UploadEquipmentPhotoMutationRequest,
   UploadEquipmentPhotoMutationResponse,
   UploadEquipmentPhotoPathParams,
 } from "./types/UploadEquipmentPhoto.ts";
+export type {
+  UploadJobPhoto201,
+  UploadJobPhotoMutation,
+  UploadJobPhotoMutationRequest,
+  UploadJobPhotoMutationResponse,
+  UploadJobPhotoPathParams,
+} from "./types/UploadJobPhoto.ts";
 export type { UserOut } from "./types/UserOut.ts";
 export { createClient } from "./clients/createClient.ts";
+export { createClientNote } from "./clients/createClientNote.ts";
 export { createEquipment } from "./clients/createEquipment.ts";
 export { createJob } from "./clients/createJob.ts";
 export { createSeries } from "./clients/createSeries.ts";
 export { deleteClient } from "./clients/deleteClient.ts";
+export { deleteClientNote } from "./clients/deleteClientNote.ts";
+export { deleteClientPhoto } from "./clients/deleteClientPhoto.ts";
 export { deleteEquipment } from "./clients/deleteEquipment.ts";
 export { deleteEquipmentPhoto } from "./clients/deleteEquipmentPhoto.ts";
 export { deleteJob } from "./clients/deleteJob.ts";
+export { deleteJobPhoto } from "./clients/deleteJobPhoto.ts";
 export { deleteSeries } from "./clients/deleteSeries.ts";
 export { deleteServiceRecord } from "./clients/deleteServiceRecord.ts";
 export { endSeries } from "./clients/endSeries.ts";
@@ -373,10 +427,15 @@ export { updateJob } from "./clients/updateJob.ts";
 export { updateProfile } from "./clients/updateProfile.ts";
 export { updateSeries } from "./clients/updateSeries.ts";
 export { uploadAppBuild } from "./clients/uploadAppBuild.ts";
+export { uploadClientPhoto } from "./clients/uploadClientPhoto.ts";
 export { uploadEquipmentPhoto } from "./clients/uploadEquipmentPhoto.ts";
+export { uploadJobPhoto } from "./clients/uploadJobPhoto.ts";
 export { createClientMutationKey } from "./hooks/useCreateClient.ts";
 export { createClientMutationOptions } from "./hooks/useCreateClient.ts";
 export { useCreateClient } from "./hooks/useCreateClient.ts";
+export { createClientNoteMutationKey } from "./hooks/useCreateClientNote.ts";
+export { createClientNoteMutationOptions } from "./hooks/useCreateClientNote.ts";
+export { useCreateClientNote } from "./hooks/useCreateClientNote.ts";
 export { createEquipmentMutationKey } from "./hooks/useCreateEquipment.ts";
 export { createEquipmentMutationOptions } from "./hooks/useCreateEquipment.ts";
 export { useCreateEquipment } from "./hooks/useCreateEquipment.ts";
@@ -389,6 +448,12 @@ export { useCreateSeries } from "./hooks/useCreateSeries.ts";
 export { deleteClientMutationKey } from "./hooks/useDeleteClient.ts";
 export { deleteClientMutationOptions } from "./hooks/useDeleteClient.ts";
 export { useDeleteClient } from "./hooks/useDeleteClient.ts";
+export { deleteClientNoteMutationKey } from "./hooks/useDeleteClientNote.ts";
+export { deleteClientNoteMutationOptions } from "./hooks/useDeleteClientNote.ts";
+export { useDeleteClientNote } from "./hooks/useDeleteClientNote.ts";
+export { deleteClientPhotoMutationKey } from "./hooks/useDeleteClientPhoto.ts";
+export { deleteClientPhotoMutationOptions } from "./hooks/useDeleteClientPhoto.ts";
+export { useDeleteClientPhoto } from "./hooks/useDeleteClientPhoto.ts";
 export { deleteEquipmentMutationKey } from "./hooks/useDeleteEquipment.ts";
 export { deleteEquipmentMutationOptions } from "./hooks/useDeleteEquipment.ts";
 export { useDeleteEquipment } from "./hooks/useDeleteEquipment.ts";
@@ -398,6 +463,9 @@ export { useDeleteEquipmentPhoto } from "./hooks/useDeleteEquipmentPhoto.ts";
 export { deleteJobMutationKey } from "./hooks/useDeleteJob.ts";
 export { deleteJobMutationOptions } from "./hooks/useDeleteJob.ts";
 export { useDeleteJob } from "./hooks/useDeleteJob.ts";
+export { deleteJobPhotoMutationKey } from "./hooks/useDeleteJobPhoto.ts";
+export { deleteJobPhotoMutationOptions } from "./hooks/useDeleteJobPhoto.ts";
+export { useDeleteJobPhoto } from "./hooks/useDeleteJobPhoto.ts";
 export { deleteSeriesMutationKey } from "./hooks/useDeleteSeries.ts";
 export { deleteSeriesMutationOptions } from "./hooks/useDeleteSeries.ts";
 export { useDeleteSeries } from "./hooks/useDeleteSeries.ts";
@@ -530,13 +598,20 @@ export { useUpdateSeries } from "./hooks/useUpdateSeries.ts";
 export { uploadAppBuildMutationKey } from "./hooks/useUploadAppBuild.ts";
 export { uploadAppBuildMutationOptions } from "./hooks/useUploadAppBuild.ts";
 export { useUploadAppBuild } from "./hooks/useUploadAppBuild.ts";
+export { uploadClientPhotoMutationKey } from "./hooks/useUploadClientPhoto.ts";
+export { uploadClientPhotoMutationOptions } from "./hooks/useUploadClientPhoto.ts";
+export { useUploadClientPhoto } from "./hooks/useUploadClientPhoto.ts";
 export { uploadEquipmentPhotoMutationKey } from "./hooks/useUploadEquipmentPhoto.ts";
 export { uploadEquipmentPhotoMutationOptions } from "./hooks/useUploadEquipmentPhoto.ts";
 export { useUploadEquipmentPhoto } from "./hooks/useUploadEquipmentPhoto.ts";
+export { uploadJobPhotoMutationKey } from "./hooks/useUploadJobPhoto.ts";
+export { uploadJobPhotoMutationOptions } from "./hooks/useUploadJobPhoto.ts";
+export { useUploadJobPhoto } from "./hooks/useUploadJobPhoto.ts";
 export { equipmentStatusEnum } from "./types/EquipmentStatus.ts";
 export { frequencyEnum } from "./types/Frequency.ts";
 export { geocodeStatusEnum } from "./types/GeocodeStatus.ts";
 export { getLatestAppBuildQueryParamsPlatformEnum } from "./types/GetLatestAppBuild.ts";
+export { jobKindEnum } from "./types/JobKind.ts";
 export { jobStatusEnum } from "./types/JobStatus.ts";
 export { platformEnum } from "./types/Platform.ts";
 export { uploadAppBuildMutationRequestPlatformEnum } from "./types/UploadAppBuild.ts";

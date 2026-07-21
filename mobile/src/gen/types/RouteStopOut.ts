@@ -3,6 +3,8 @@
  * Do not edit manually.
  */
 
+import type { JobKind } from "./JobKind.ts";
+import type { JobPhotoOut } from "./JobPhotoOut.ts";
 import type { JobStatus } from "./JobStatus.ts";
 
 /**
@@ -34,6 +36,10 @@ export type RouteStopOut = {
   /**
    * @type string
    */
+  kind: JobKind;
+  /**
+   * @type string
+   */
   status: JobStatus;
   /**
    * @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
@@ -49,6 +55,10 @@ export type RouteStopOut = {
    */
   notes: string;
   route_order: number | null;
+  /**
+   * @type array
+   */
+  photos: JobPhotoOut[];
   /**
    * @type string
    */

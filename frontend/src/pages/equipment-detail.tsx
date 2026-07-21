@@ -27,6 +27,7 @@ import {
   useLogService,
   useUpdateEquipment,
 } from '@/gen'
+import { formatDate } from '@/lib/format'
 import { axiosInstance } from '@/lib/kubb-client'
 
 export function EquipmentDetailPage() {
@@ -195,7 +196,7 @@ export function EquipmentDetailPage() {
                   >
                     <div>
                       <p className="text-sm font-medium">
-                        {record.serviced_on}
+                        {formatDate(record.serviced_on)}
                         {record.cost != null && (
                           <span className="ml-2 text-muted-foreground">${record.cost}</span>
                         )}

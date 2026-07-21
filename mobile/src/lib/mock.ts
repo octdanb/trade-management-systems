@@ -67,6 +67,14 @@ const clients: MockClient[] = [
     geocode_status: 'ok',
     created_at: nowIso(),
     updated_at: nowIso(),
+    note_entries: [
+      {
+        id: 900,
+        body: 'Quoted $70 for the hedge — she will think about it.',
+        created_at: nowIso(),
+      },
+    ],
+    photos: [],
   },
   {
     id: 2,
@@ -83,6 +91,8 @@ const clients: MockClient[] = [
     geocode_status: 'ok',
     created_at: nowIso(),
     updated_at: nowIso(),
+    note_entries: [],
+    photos: [],
   },
   {
     id: 3,
@@ -99,6 +109,8 @@ const clients: MockClient[] = [
     geocode_status: 'ok',
     created_at: nowIso(),
     updated_at: nowIso(),
+    note_entries: [],
+    photos: [],
   },
   {
     id: 4,
@@ -115,6 +127,8 @@ const clients: MockClient[] = [
     geocode_status: 'ok',
     created_at: nowIso(),
     updated_at: nowIso(),
+    note_entries: [],
+    photos: [],
   },
 ]
 
@@ -145,11 +159,13 @@ function seedJobs() {
         scheduled_date: d,
         scheduled_time: s.default_time,
         duration_minutes: 60,
+        kind: 'job',
         status: past ? 'completed' : 'scheduled',
         price: client.rate,
         paid: past,
         notes: '',
         route_order: null,
+        photos: [],
         client_lat: client.lat,
         client_lng: client.lng,
         address: client.address,
@@ -158,6 +174,26 @@ function seedJobs() {
   }
 }
 seedJobs()
+// A pending quote appointment for tomorrow, so the demo shows the flow.
+jobs.push({
+  id: id(),
+  client_id: 3,
+  client_name: 'Carol Devi',
+  series_id: null,
+  scheduled_date: addDays(today(), 1),
+  scheduled_time: '15:30:00',
+  duration_minutes: 30,
+  kind: 'quote',
+  status: 'scheduled',
+  price: '0',
+  paid: false,
+  notes: 'Wants the back hedge trimmed and green waste removed.',
+  route_order: null,
+  photos: [],
+  client_lat: -41.335,
+  client_lng: 174.773,
+  address: 'Island Bay, Wellington',
+})
 
 const equipment: EquipmentOut[] = [
   {
@@ -316,11 +352,13 @@ function materializeSeries(s: SeriesOut, client: MockClient) {
       scheduled_date: d,
       scheduled_time: s.default_time,
       duration_minutes: s.duration_minutes,
+      kind: 'job',
       status: 'scheduled',
       price: client.rate,
       paid: false,
       notes: '',
       route_order: null,
+      photos: [],
       client_lat: client.lat,
       client_lng: client.lng,
       address: client.address,
@@ -434,6 +472,8 @@ function handleApi(method: string, url: string, config: AxiosRequestConfig): Res
       geocode_status: body.address ? 'ok' : 'pending',
       created_at: nowIso(),
       updated_at: nowIso(),
+      note_entries: [],
+      photos: [],
     }
     clients.push(client)
     return [201, client]
@@ -464,6 +504,43 @@ function handleApi(method: string, url: string, config: AxiosRequestConfig): Res
     client.lat = HOME.lat + (Math.random() - 0.5) / 10
     client.lng = HOME.lng + (Math.random() - 0.5) / 10
     return [200, client]
+  }
+
+  m = url.match(/^\/api\/clients\/(\d+)\/notes$/)
+  if (m && method === 'post') {
+    const client = clients.find((c) => c.id === Number(m![1]))
+    if (!client) return [404, {}]
+    const note = { id: id(), body: String(jsonBody(config).body ?? ''), created_at: nowIso() }
+    client.note_entries.unshift(note)
+    return [201, note]
+  }
+  m = url.match(/^\/api\/clients\/(\d+)\/notes\/(\d+)$/)
+  if (m && method === 'delete') {
+    const client = clients.find((c) => c.id === Number(m![1]))
+    if (!client) return [404, {}]
+    client.note_entries = client.note_entries.filter((n) => n.id !== Number(m![2]))
+    return [204, null]
+  }
+  m = url.match(/^\/api\/clients\/(\d+)\/photos$/)
+  if (m && method === 'post') {
+    const client = clients.find((c) => c.id === Number(m![1]))
+    if (!client) return [404, {}]
+    const filePart = formParts(config).find((p) => p.fieldName === 'file')
+    const photo = {
+      id: id(),
+      url: filePart?.uri ?? 'https://placehold.co/300x300',
+      caption: '',
+      uploaded_at: nowIso(),
+    }
+    client.photos.unshift(photo)
+    return [201, photo]
+  }
+  m = url.match(/^\/api\/clients\/(\d+)\/photos\/(\d+)$/)
+  if (m && method === 'delete') {
+    const client = clients.find((c) => c.id === Number(m![1]))
+    if (!client) return [404, {}]
+    client.photos = client.photos.filter((p) => p.id !== Number(m![2]))
+    return [204, null]
   }
 
   // -- series
@@ -507,7 +584,13 @@ function handleApi(method: string, url: string, config: AxiosRequestConfig): Res
   if (url === '/api/jobs' && method === 'get') {
     const start = q('start') ?? '0000'
     const end = q('end') ?? '9999'
-    return [200, jobs.filter((j) => j.scheduled_date >= start && j.scheduled_date <= end)]
+    const kind = q('kind')
+    return [
+      200,
+      jobs.filter(
+        (j) => j.scheduled_date >= start && j.scheduled_date <= end && (!kind || j.kind === kind),
+      ),
+    ]
   }
   if (url === '/api/jobs' && method === 'post') {
     const body = jsonBody(config)
@@ -521,11 +604,13 @@ function handleApi(method: string, url: string, config: AxiosRequestConfig): Res
       scheduled_date: String(body.scheduled_date),
       scheduled_time: (body.scheduled_time as string | null) ?? null,
       duration_minutes: 60,
+      kind: (body.kind as MockJob['kind']) ?? 'job',
       status: 'scheduled',
-      price: client.rate,
+      price: body.price != null ? String(body.price) : client.rate,
       paid: false,
       notes: String(body.notes ?? ''),
       route_order: null,
+      photos: [],
       client_lat: client.lat,
       client_lng: client.lng,
       address: client.address,
@@ -546,6 +631,28 @@ function handleApi(method: string, url: string, config: AxiosRequestConfig): Res
       jobs.splice(jobs.indexOf(job), 1)
       return [204, null]
     }
+  }
+
+  m = url.match(/^\/api\/jobs\/(\d+)\/photos$/)
+  if (m && method === 'post') {
+    const job = jobs.find((j) => j.id === Number(m![1]))
+    if (!job) return [404, {}]
+    const filePart = formParts(config).find((p) => p.fieldName === 'file')
+    const photo = {
+      id: id(),
+      url: filePart?.uri ?? 'https://placehold.co/300x300',
+      caption: '',
+      uploaded_at: nowIso(),
+    }
+    job.photos.unshift(photo)
+    return [201, photo]
+  }
+  m = url.match(/^\/api\/jobs\/(\d+)\/photos\/(\d+)$/)
+  if (m && method === 'delete') {
+    const job = jobs.find((j) => j.id === Number(m![1]))
+    if (!job) return [404, {}]
+    job.photos = job.photos.filter((p) => p.id !== Number(m![2]))
+    return [204, null]
   }
 
   // -- route

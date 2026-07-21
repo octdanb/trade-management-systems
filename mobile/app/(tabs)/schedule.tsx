@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { Badge, EmptyState, LoadingState } from '../../src/components/ui'
 import { type JobOut, jobStatusEnum, useListJobs } from '../../src/gen'
-import { addDays, humanDate, todayString } from '../../src/lib/format'
+import { addDays, formatTime, humanDate, todayString } from '../../src/lib/format'
 
 const PAST_DAYS = 7
 const FUTURE_DAYS = 42
@@ -89,14 +89,17 @@ export default function ScheduleScreen() {
                   {item.client_name}
                 </Text>
                 <Text className="text-xs text-muted-foreground">
-                  {item.scheduled_time ? item.scheduled_time.slice(0, 5) : 'Any time'}
+                  {item.scheduled_time ? formatTime(item.scheduled_time) : 'Any time'}
                   {item.series_id ? ' · repeating' : ''}
                 </Text>
               </View>
+              {item.kind === 'quote' && <Badge text="Quote" tone="amber" />}
               {item.status === jobStatusEnum.completed && <Badge text="Done" tone="green" />}
               {item.status === jobStatusEnum.skipped && <Badge text="Skipped" tone="amber" />}
-              {item.paid && <Badge text="Paid" tone="green" />}
-              <Text className="font-semibold text-foreground">${item.price}</Text>
+              {item.kind !== 'quote' && item.paid && <Badge text="Paid" tone="green" />}
+              {item.kind !== 'quote' && (
+                <Text className="font-semibold text-foreground">${item.price}</Text>
+              )}
               <Ionicons name="chevron-forward" size={16} color="#a3a3a3" />
             </Pressable>
           )}

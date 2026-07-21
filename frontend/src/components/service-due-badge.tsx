@@ -2,6 +2,8 @@ import { Wrench } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 
+import { formatDate } from '@/lib/format'
+
 export function ServiceDueBadge({ dueOn }: { dueOn: string | null | undefined }) {
   if (!dueOn) return null
   const due = new Date(`${dueOn}T00:00:00`)
@@ -23,5 +25,5 @@ export function ServiceDueBadge({ dueOn }: { dueOn: string | null | undefined })
       </Badge>
     )
   }
-  return <Badge variant="outline">Service due {dueOn}</Badge>
+  return <Badge variant="outline">Service due {formatDate(dueOn)}</Badge>
 }

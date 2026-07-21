@@ -25,6 +25,11 @@ export function googleMapsDirectionsUrl(home: LatLng | null, stops: RouteStopOut
   return `https://www.google.com/maps/dir/?${params.toString()}`
 }
 
+/** Google Maps search link for a plain address (opens the maps app on mobile). */
+export function googleMapsSearchUrl(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+}
+
 export function formatDuration(seconds: number | null | undefined): string {
   if (seconds == null) return ''
   const minutes = Math.round(seconds / 60)

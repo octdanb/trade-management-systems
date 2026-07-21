@@ -158,6 +158,122 @@
         "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
       }
     },
+    "/api/clients/{client_id}/notes": {
+      "post": {
+        "operationId": "createClientNote",
+        "summary": "Create Client Note",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ClientNoteOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ClientNoteIn" } }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
+    "/api/clients/{client_id}/notes/{note_id}": {
+      "delete": {
+        "operationId": "deleteClientNote",
+        "summary": "Delete Client Note",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "note_id",
+            "schema": { "title": "Note Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
+    "/api/clients/{client_id}/photos": {
+      "post": {
+        "operationId": "uploadClientPhoto",
+        "summary": "Upload Client Photo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ClientPhotoOut" } }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": { "format": "binary", "title": "File", "type": "string" },
+                  "caption": { "default": "", "title": "Caption", "type": "string" }
+                },
+                "required": ["file"],
+                "title": "MultiPartBodyParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
+    "/api/clients/{client_id}/photos/{photo_id}": {
+      "delete": {
+        "operationId": "deleteClientPhoto",
+        "summary": "Delete Client Photo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "schema": { "title": "Client Id", "type": "integer" },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "photo_id",
+            "schema": { "title": "Photo Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["clients"],
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
     "/api/clients/{client_id}/geocode": {
       "post": {
         "operationId": "geocodeClient",
@@ -392,6 +508,12 @@
               "anyOf": [{ "$ref": "#/components/schemas/JobStatus" }, { "type": "null" }]
             },
             "required": false
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "schema": { "anyOf": [{ "$ref": "#/components/schemas/JobKind" }, { "type": "null" }] },
+            "required": false
           }
         ],
         "responses": {
@@ -468,6 +590,69 @@
             "in": "path",
             "name": "job_id",
             "schema": { "title": "Job Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "tags": ["schedule"],
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
+    "/api/jobs/{job_id}/photos": {
+      "post": {
+        "operationId": "uploadJobPhoto",
+        "summary": "Upload Job Photo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "schema": { "title": "Job Id", "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/JobPhotoOut" } }
+            }
+          }
+        },
+        "tags": ["schedule"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": { "format": "binary", "title": "File", "type": "string" },
+                  "caption": { "default": "", "title": "Caption", "type": "string" }
+                },
+                "required": ["file"],
+                "title": "MultiPartBodyParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{ "SessionAuth": [] }, { "AccessTokenAuth": [] }]
+      }
+    },
+    "/api/jobs/{job_id}/photos/{photo_id}": {
+      "delete": {
+        "operationId": "deleteJobPhoto",
+        "summary": "Delete Job Photo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "schema": { "title": "Job Id", "type": "integer" },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "photo_id",
+            "schema": { "title": "Photo Id", "type": "integer" },
             "required": true
           }
         ],
@@ -1029,6 +1214,16 @@
         "title": "UserOut",
         "type": "object"
       },
+      "ClientNoteOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "body": { "title": "Body", "type": "string" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" }
+        },
+        "required": ["id", "body", "created_at"],
+        "title": "ClientNoteOut",
+        "type": "object"
+      },
       "ClientOut": {
         "properties": {
           "id": { "title": "Id", "type": "integer" },
@@ -1052,7 +1247,17 @@
           "lng": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Lng" },
           "geocode_status": { "$ref": "#/components/schemas/GeocodeStatus" },
           "created_at": { "format": "date-time", "title": "Created At", "type": "string" },
-          "updated_at": { "format": "date-time", "title": "Updated At", "type": "string" }
+          "updated_at": { "format": "date-time", "title": "Updated At", "type": "string" },
+          "note_entries": {
+            "items": { "$ref": "#/components/schemas/ClientNoteOut" },
+            "title": "Note Entries",
+            "type": "array"
+          },
+          "photos": {
+            "items": { "$ref": "#/components/schemas/ClientPhotoOut" },
+            "title": "Photos",
+            "type": "array"
+          }
         },
         "required": [
           "id",
@@ -1068,9 +1273,22 @@
           "lng",
           "geocode_status",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "note_entries",
+          "photos"
         ],
         "title": "ClientOut",
+        "type": "object"
+      },
+      "ClientPhotoOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "url": { "title": "Url", "type": "string" },
+          "caption": { "title": "Caption", "type": "string" },
+          "uploaded_at": { "format": "date-time", "title": "Uploaded At", "type": "string" }
+        },
+        "required": ["id", "url", "caption", "uploaded_at"],
+        "title": "ClientPhotoOut",
         "type": "object"
       },
       "GeocodeStatus": {
@@ -1104,6 +1322,12 @@
         },
         "required": ["name", "rate"],
         "title": "ClientIn",
+        "type": "object"
+      },
+      "ClientNoteIn": {
+        "properties": { "body": { "title": "Body", "type": "string" } },
+        "required": ["body"],
+        "title": "ClientNoteIn",
         "type": "object"
       },
       "ProfileOut": {
@@ -1203,6 +1427,7 @@
         "title": "SeriesEndIn",
         "type": "object"
       },
+      "JobKind": { "enum": ["job", "quote"], "title": "JobKind", "type": "string" },
       "JobStatus": {
         "enum": ["scheduled", "completed", "skipped", "cancelled"],
         "title": "JobStatus",
@@ -1223,6 +1448,7 @@
             "title": "Scheduled Time"
           },
           "duration_minutes": { "title": "Duration Minutes", "type": "integer" },
+          "kind": { "$ref": "#/components/schemas/JobKind" },
           "status": { "$ref": "#/components/schemas/JobStatus" },
           "price": {
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -1234,6 +1460,11 @@
           "route_order": {
             "anyOf": [{ "type": "integer" }, { "type": "null" }],
             "title": "Route Order"
+          },
+          "photos": {
+            "items": { "$ref": "#/components/schemas/JobPhotoOut" },
+            "title": "Photos",
+            "type": "array"
           }
         },
         "required": [
@@ -1244,17 +1475,30 @@
           "scheduled_date",
           "scheduled_time",
           "duration_minutes",
+          "kind",
           "status",
           "price",
           "paid",
           "notes",
-          "route_order"
+          "route_order",
+          "photos"
         ],
         "title": "JobOut",
         "type": "object"
       },
+      "JobPhotoOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "url": { "title": "Url", "type": "string" },
+          "caption": { "title": "Caption", "type": "string" },
+          "uploaded_at": { "format": "date-time", "title": "Uploaded At", "type": "string" }
+        },
+        "required": ["id", "url", "caption", "uploaded_at"],
+        "title": "JobPhotoOut",
+        "type": "object"
+      },
       "JobIn": {
-        "description": "A one-off job. Series occurrences are created via the series endpoints.",
+        "description": "A one-off job or quote. Series occurrences are created via the series endpoints.",
         "properties": {
           "client_id": { "title": "Client Id", "type": "integer" },
           "scheduled_date": { "format": "date", "title": "Scheduled Date", "type": "string" },
@@ -1263,6 +1507,7 @@
             "title": "Scheduled Time"
           },
           "duration_minutes": { "default": 60, "title": "Duration Minutes", "type": "integer" },
+          "kind": { "allOf": [{ "$ref": "#/components/schemas/JobKind" }], "default": "job" },
           "price": {
             "anyOf": [
               { "type": "number" },
@@ -1292,6 +1537,7 @@
             "anyOf": [{ "type": "integer" }, { "type": "null" }],
             "title": "Duration Minutes"
           },
+          "kind": { "anyOf": [{ "$ref": "#/components/schemas/JobKind" }, { "type": "null" }] },
           "status": { "anyOf": [{ "$ref": "#/components/schemas/JobStatus" }, { "type": "null" }] },
           "price": {
             "anyOf": [
@@ -1362,6 +1608,7 @@
             "title": "Scheduled Time"
           },
           "duration_minutes": { "title": "Duration Minutes", "type": "integer" },
+          "kind": { "$ref": "#/components/schemas/JobKind" },
           "status": { "$ref": "#/components/schemas/JobStatus" },
           "price": {
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -1373,6 +1620,11 @@
           "route_order": {
             "anyOf": [{ "type": "integer" }, { "type": "null" }],
             "title": "Route Order"
+          },
+          "photos": {
+            "items": { "$ref": "#/components/schemas/JobPhotoOut" },
+            "title": "Photos",
+            "type": "array"
           },
           "address": { "title": "Address", "type": "string" },
           "lat": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Lat" },
@@ -1390,11 +1642,13 @@
           "scheduled_date",
           "scheduled_time",
           "duration_minutes",
+          "kind",
           "status",
           "price",
           "paid",
           "notes",
           "route_order",
+          "photos",
           "address",
           "lat",
           "lng"
