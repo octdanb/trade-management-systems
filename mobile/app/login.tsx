@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { useLogin, useSignup } from '../src/hooks/use-auth'
 import { allauthErrorMessage } from '../src/lib/allauth'
+import { MOCK_ENABLED } from '../src/lib/mock'
 
 export default function LoginScreen() {
   const router = useRouter()
@@ -30,6 +31,12 @@ export default function LoginScreen() {
         <Text className="mb-8 text-muted-foreground">
           {mode === 'login' ? 'Welcome back' : 'Create your account'}
         </Text>
+        {MOCK_ENABLED && (
+          <Text className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+            Mock test build — no backend. Any email and password signs in; all data is on-device
+            demo data.
+          </Text>
+        )}
 
         <Text className="mb-1 text-sm font-medium text-foreground">Email</Text>
         <TextInput

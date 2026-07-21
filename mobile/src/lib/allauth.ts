@@ -9,8 +9,11 @@
 import axios, { isAxiosError } from 'axios'
 
 import { API_URL, clearTokens, getSessionToken, storeTokens } from './api'
+import { installMock, MOCK_ENABLED } from './mock'
 
 const allauth = axios.create({ baseURL: `${API_URL}/_allauth/app/v1` })
+
+if (MOCK_ENABLED) installMock(allauth, 'allauth')
 
 allauth.interceptors.request.use(async (config) => {
   const sessionToken = await getSessionToken()

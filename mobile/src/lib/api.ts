@@ -8,6 +8,8 @@
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
 
+import { installMock, MOCK_ENABLED } from './mock'
+
 export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000'
 
 const ACCESS_TOKEN_KEY = 'mow.access_token'
@@ -33,6 +35,8 @@ export async function clearTokens() {
 
 /** Axios instance for /api/* — attaches the Bearer access token. */
 export const api = axios.create({ baseURL: API_URL })
+
+if (MOCK_ENABLED) installMock(api, 'api')
 
 api.interceptors.request.use(async (config) => {
   const token = await getAccessToken()

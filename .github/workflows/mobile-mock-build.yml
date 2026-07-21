@@ -1,0 +1,95 @@
+name: Mobile Mock Build
+
+# Builds the standalone MOCK Android app — no backend required, all data is
+# an in-memory demo store (EXPO_PUBLIC_MOCK). Separate identity ("Mow Mock",
+# package nz.mow.app.mock) so it installs alongside the real app.
+#
+# The APK is published to the `mock-latest` prerelease with a STABLE asset
+# name, so the download link never changes:
+#   https://github.com/<owner>/<repo>/releases/download/mock-latest/mow-mock.apk
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: "Notes for this mock build"
+        required: false
+        default: ""
+
+concurrency:
+  group: mobile-mock-build
+  cancel-in-progress: false
+
+jobs:
+  build-mock-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: mobile
+    env:
+      MOCK_BUILD: "1"
+      EXPO_PUBLIC_MOCK: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: mobile/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile/pnpm-lock.yaml
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Stamp versionCode
+        run: |
+          node - "${{ github.run_number }}" << 'EOF'
+          const fs = require('fs')
+          const [code] = process.argv.slice(1)
+          const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
+          app.expo.android.versionCode = Number(code)
+          fs.writeFileSync('app.json', JSON.stringify(app, null, 2))
+          EOF
+
+      - name: Prebuild android project (mock identity)
+        run: pnpm exec expo prebuild --platform android --no-install
+
+      - name: Build APK
+        working-directory: mobile/android
+        run: ./gradlew :app:assembleRelease --no-daemon
+
+      - name: Collect APK
+        id: apk
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk mow-mock.apk
+          ls -lh mow-mock.apk
+
+      - name: Store as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mow-mock-apk
+          path: mobile/mow-mock.apk
+
+      - name: Publish to the mock-latest prerelease (stable download URL)
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          notes="Mock test build — no backend needed, on-device demo data. Any email/password signs in.
+          Built from ${GITHUB_SHA::7} (run #${{ github.run_number }}). ${{ inputs.notes }}"
+          if ! gh release view mock-latest --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create mock-latest --repo "$GITHUB_REPOSITORY" \
+              --prerelease --title "Mock test build (Android)" --notes "$notes" --target "$GITHUB_SHA"
+          else
+            gh release edit mock-latest --repo "$GITHUB_REPOSITORY" --notes "$notes"
+          fi
+          gh release upload mock-latest mobile/mow-mock.apk --repo "$GITHUB_REPOSITORY" --clobber
+          echo "Download: https://github.com/$GITHUB_REPOSITORY/releases/download/mock-latest/mow-mock.apk"

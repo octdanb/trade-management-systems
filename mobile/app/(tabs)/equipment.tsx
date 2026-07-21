@@ -9,7 +9,10 @@ import { API_URL } from '../../src/lib/api'
 import { todayString } from '../../src/lib/format'
 
 export function absoluteMediaUrl(url: string): string {
-  return url.startsWith('http') ? url : `${API_URL}${url}`
+  if (url.startsWith('http') || url.startsWith('file:') || url.startsWith('content:')) {
+    return url
+  }
+  return `${API_URL}${url}`
 }
 
 export function serviceDueTone(dueOn: string | null | undefined) {
