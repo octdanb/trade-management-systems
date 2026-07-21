@@ -64,13 +64,20 @@ jobs:
           else
             version=$(node -p "require('./app.json').expo.version")
           fi
-          node - "$version" "$code" << 'EOF'
+          VERSION="$version" VERSION_CODE="$code" node << 'EOF'
           const fs = require('fs')
-          const [version, code] = process.argv.slice(1)
+          const code = Number(process.env.VERSION_CODE)
+          if (!Number.isInteger(code) || code < 1) {
+            throw new Error(`Bad VERSION_CODE: ${process.env.VERSION_CODE}`)
+          }
+          if (!process.env.VERSION) {
+            throw new Error('Bad VERSION')
+          }
           const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
-          app.expo.version = version
-          app.expo.android.versionCode = Number(code)
+          app.expo.version = process.env.VERSION
+          app.expo.android.versionCode = code
           fs.writeFileSync('app.json', JSON.stringify(app, null, 2))
+          console.log('Stamped', process.env.VERSION, code)
           EOF
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "code=$code" >> "$GITHUB_OUTPUT"

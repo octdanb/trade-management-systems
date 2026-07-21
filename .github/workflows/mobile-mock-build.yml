@@ -50,13 +50,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Stamp versionCode
+        env:
+          VERSION_CODE: ${{ github.run_number }}
         run: |
-          node - "${{ github.run_number }}" << 'EOF'
+          node << 'EOF'
           const fs = require('fs')
-          const [code] = process.argv.slice(1)
+          const code = Number(process.env.VERSION_CODE)
+          if (!Number.isInteger(code) || code < 1) {
+            throw new Error(`Bad VERSION_CODE: ${process.env.VERSION_CODE}`)
+          }
           const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
-          app.expo.android.versionCode = Number(code)
+          app.expo.android.versionCode = code
           fs.writeFileSync('app.json', JSON.stringify(app, null, 2))
+          console.log('Stamped versionCode', code)
           EOF
 
       - name: Prebuild android project (mock identity)
