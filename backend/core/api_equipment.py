@@ -48,7 +48,11 @@ def update_equipment(request, equipment_id: int, payload: EquipmentIn):
 
 @router.delete("/equipment/{equipment_id}", response={204: None}, operation_id="deleteEquipment")
 def delete_equipment(request, equipment_id: int):
-    _owned(request, equipment_id).delete()
+    equipment = _owned(request, equipment_id)
+    # DB cascade won't touch the object store — remove the files explicitly.
+    for photo in equipment.photos.all():
+        photo.image.delete(save=False)
+    equipment.delete()
     return 204, None
 
 

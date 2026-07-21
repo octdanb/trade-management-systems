@@ -107,6 +107,22 @@ rate, overridable), paid flag and notes, so history is never lost:
   occurrences.
 - Ending a series keeps everything on/before the end date.
 
+## Photo storage (S3-compatible)
+
+Uploaded photos are stored in an S3-compatible object store via
+django-storages. Local dev runs [MinIO](https://min.io) inside docker compose
+(`just dev` starts it, creates the `media` bucket, and makes it
+public-download; console at <http://localhost:9001>, login
+`minioadmin`/`minioadmin`). Django talks to `minio:9000` inside the compose
+network while browsers fetch image URLs from `localhost:9000` — that split is
+the `AWS_S3_ENDPOINT_URL` vs `AWS_S3_CUSTOM_DOMAIN` settings.
+
+In production point the same env vars at AWS S3 / Cloudflare R2 / Spaces (see
+`.env.example`): either a public bucket behind a CDN (`AWS_S3_CUSTOM_DOMAIN`)
+or a private bucket with signed expiring URLs (`AWS_QUERYSTRING_AUTH=true`).
+Set `USE_S3_MEDIA=false` to fall back to local-disk media (the Django dev
+server then serves `/media/` itself).
+
 ## Emails in development
 
 The dev stack uses Django's console email backend: verification and

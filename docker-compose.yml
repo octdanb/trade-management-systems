@@ -15,6 +15,37 @@ services:
       timeout: 3s
       retries: 15
 
+  # S3-compatible object storage for uploaded photos (console at :9001).
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  # One-shot job: create the media bucket and allow public downloads
+  # (URLs are unsigned because the browser fetches straight from MinIO).
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin &&
+      mc mb --ignore-existing local/media &&
+      mc anonymous set download local/media"
+
   backend:
     build:
       context: ./backend
@@ -32,6 +63,15 @@ services:
       GEOCODER_COUNTRY_CODES: ${GEOCODER_COUNTRY_CODES:-nz}
       NOMINATIM_URL: ${NOMINATIM_URL:-https://nominatim.openstreetmap.org}
       OSRM_URL: ${OSRM_URL:-https://router.project-osrm.org}
+      # Photo uploads -> MinIO (S3 API). Django talks to minio:9000 inside
+      # the compose network; browsers fetch from localhost:9000.
+      USE_S3_MEDIA: ${USE_S3_MEDIA:-true}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-minioadmin}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME:-media}
+      AWS_S3_ENDPOINT_URL: ${AWS_S3_ENDPOINT_URL:-http://minio:9000}
+      AWS_S3_CUSTOM_DOMAIN: ${AWS_S3_CUSTOM_DOMAIN:-localhost:9000/media}
+      AWS_S3_URL_PROTOCOL: ${AWS_S3_URL_PROTOCOL:-http:}
     volumes:
       - ./backend:/app
       - backend_venv:/app/.venv
@@ -40,6 +80,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
 
   frontend:
     build:
@@ -57,5 +99,6 @@ services:
 
 volumes:
   pgdata:
+  minio_data:
   backend_venv:
   frontend_node_modules:

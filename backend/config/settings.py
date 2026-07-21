@@ -116,6 +116,44 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 
+# ---------------------------------------------------------------------------
+# S3-style media storage (uploaded photos).
+#
+# Off by default (local filesystem). With USE_S3_MEDIA=true, uploads go to
+# any S3-compatible store — MinIO in local docker compose (pre-wired), or
+# AWS S3 / Cloudflare R2 / DigitalOcean Spaces in production. Credentials
+# come from the standard boto3 env vars (AWS_ACCESS_KEY_ID /
+# AWS_SECRET_ACCESS_KEY) or an instance role.
+#
+#   AWS_S3_ENDPOINT_URL    where Django talks to the API (unset for real AWS)
+#   AWS_S3_CUSTOM_DOMAIN   host[/path] browsers fetch from (MinIO's public
+#                          port, or a CDN/CloudFront domain); requires a
+#                          public-read bucket since URLs aren't signed
+#   AWS_QUERYSTRING_AUTH   set true (and unset custom domain) for a private
+#                          bucket with signed, expiring URLs instead
+# ---------------------------------------------------------------------------
+
+USE_S3_MEDIA = env_bool("USE_S3_MEDIA", False)
+
+if USE_S3_MEDIA:
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": os.environ.get("AWS_STORAGE_BUCKET_NAME", "media"),
+            "endpoint_url": os.environ.get("AWS_S3_ENDPOINT_URL") or None,
+            "region_name": os.environ.get("AWS_S3_REGION_NAME") or None,
+            "custom_domain": os.environ.get("AWS_S3_CUSTOM_DOMAIN") or None,
+            "url_protocol": os.environ.get("AWS_S3_URL_PROTOCOL")
+            or ("http:" if DEBUG else "https:"),
+            "querystring_auth": env_bool("AWS_QUERYSTRING_AUTH", False),
+            "querystring_expire": int(os.environ.get("AWS_QUERYSTRING_EXPIRE", "3600")),
+            # Never silently replace an existing object with the same name.
+            "file_overwrite": False,
+            # Optional key prefix inside the bucket, e.g. "uploads".
+            "location": os.environ.get("AWS_S3_LOCATION", ""),
+        },
+    }
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SITE_ID = 1
