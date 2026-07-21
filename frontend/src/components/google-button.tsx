@@ -4,7 +4,7 @@ import { redirectToProvider } from '@/lib/allauth'
 export function GoogleButton({
   label = 'Continue with Google',
   process = 'login',
-  callbackUrl = '/',
+  callbackUrl = '/today',
 }: {
   label?: string
   process?: 'login' | 'connect'

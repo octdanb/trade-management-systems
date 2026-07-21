@@ -7,6 +7,7 @@ import { ClientDetailPage } from '@/pages/client-detail'
 import { ClientsPage } from '@/pages/clients'
 import { EquipmentDetailPage } from '@/pages/equipment-detail'
 import { EquipmentPage } from '@/pages/equipment'
+import { LandingPage } from '@/pages/landing'
 import { LoginPage } from '@/pages/login'
 import { ForgotPasswordPage, ResetPasswordPage } from '@/pages/reset-password'
 import { SchedulePage } from '@/pages/schedule'
@@ -35,7 +36,7 @@ function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
   const session = useSession()
 
   if (session.data) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/today" replace />
   }
   return children
 }
@@ -46,6 +47,8 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Public landing page — first port of call, explains the app. */}
+      <Route path="/" element={<LandingPage />} />
       <Route
         element={
           <RequireAuth>
@@ -53,7 +56,6 @@ export default function App() {
           </RequireAuth>
         }
       >
-        <Route path="/" element={<Navigate to="/today" replace />} />
         <Route path="/today" element={<TodayPage />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/clients" element={<ClientsPage />} />

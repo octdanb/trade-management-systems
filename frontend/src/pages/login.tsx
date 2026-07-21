@@ -22,7 +22,7 @@ export function LoginPage() {
     event.preventDefault()
     loginMutation.mutate(
       { email, password },
-      { onSuccess: () => navigate('/', { replace: true }) },
+      { onSuccess: () => navigate('/today', { replace: true }) },
     )
   }
 

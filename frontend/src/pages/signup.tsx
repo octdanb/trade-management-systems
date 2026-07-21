@@ -19,7 +19,7 @@ export function SignupPage() {
     event.preventDefault()
     signupMutation.mutate(
       { email, password },
-      { onSuccess: () => navigate('/', { replace: true }) },
+      { onSuccess: () => navigate('/today', { replace: true }) },
     )
   }
 
