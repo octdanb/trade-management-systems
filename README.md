@@ -184,6 +184,18 @@ So cutting a release is: `git checkout -b release/1.2.0 && git push -u origin
 release/1.2.0`. The release job is idempotent — re-pushing the branch after a
 fix won't duplicate the release (delete the release + tag first to re-cut).
 
+## Deployment (Nomad + Traefik)
+
+Publishing a release automatically deploys it: the `Deploy` workflow runs
+`nomad job run` against your Nomad server with the released image tag and
+waits for a healthy rolling deployment (auto-revert on failure). The job
+(`deploy/mow.nomad.hcl`) runs Postgres, MinIO, the backend and the frontend,
+with Traefik routing `https://<APP_DOMAIN>` to the app and
+`https://<MEDIA_DOMAIN>` to photo storage. One-time server setup (host
+volumes, Traefik provider, secrets via `nomad var put`, GitHub environment
+config) is documented in [deploy/README.md](deploy/README.md). Manual deploys:
+Actions → Deploy → Run workflow with any image tag.
+
 Production env vars the backend expects: `DJANGO_SECRET_KEY`,
 `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`,
 `DATABASE_URL`, `FRONTEND_URL`, `GOOGLE_OAUTH_CLIENT_ID`,

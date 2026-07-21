@@ -26,6 +26,9 @@ git push -u origin release/X.Y.Z
 
 4. Verify: the Actions run is green and the release appears under
    `https://github.com/<owner>/<repo>/releases`.
+5. Publishing the release triggers the **Deploy** workflow, which ships that
+   version to the Nomad server and waits for a healthy rollout (see the
+   `deploy` skill / `deploy/README.md`).
 
 ## Notes
 

@@ -1,0 +1,93 @@
+name: Deploy
+
+# Deploys to the Nomad server whenever a release is published (the
+# release/X.Y.Z branch flow ends in a published release), or on demand via
+# workflow_dispatch with any image tag.
+#
+# Required GitHub configuration (Settings → Environments → production):
+#   secrets: NOMAD_ADDR   e.g. https://nomad.example.com
+#            NOMAD_TOKEN  ACL token allowed to submit the job + read variables
+#   variables: APP_DOMAIN   e.g. mow.example.com
+#              MEDIA_DOMAIN e.g. media.mow.example.com
+#
+# If the Nomad API is not reachable from the internet, uncomment the
+# Tailscale step below (and add TS_OAUTH_CLIENT_ID / TS_OAUTH_SECRET), or
+# switch `runs-on` to a self-hosted runner inside your network.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (e.g. 1.2.0, a branch name, or sha-xxxxxxx)"
+        required: true
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  NOMAD_VERSION: "1.9.7"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      # - name: Connect to Tailscale (uncomment if Nomad isn't public)
+      #   uses: tailscale/github-action@v3
+      #   with:
+      #     oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+      #     oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+      #     tags: tag:ci
+
+      - name: Install Nomad CLI
+        run: |
+          curl -fsSL "https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip" -o nomad.zip
+          unzip -o nomad.zip nomad
+          sudo install nomad /usr/local/bin/nomad
+          nomad version
+
+      - name: Resolve image tag
+        id: tag
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            tag="${{ github.event.release.tag_name }}"
+            tag="${tag#v}"   # release tag vX.Y.Z -> image tag X.Y.Z
+          else
+            tag="${{ inputs.image_tag }}"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Deploying image tag: $tag"
+
+      - name: Deploy to Nomad
+        env:
+          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+        run: |
+          nomad job run \
+            -var "image_tag=${{ steps.tag.outputs.tag }}" \
+            -var "domain=${{ vars.APP_DOMAIN }}" \
+            -var "media_domain=${{ vars.MEDIA_DOMAIN }}" \
+            deploy/mow.nomad.hcl
+
+      - name: Wait for healthy deployment
+        env:
+          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+        run: |
+          deploy_id=$(nomad job deployments -json mow | python3 -c "import json,sys; print(json.load(sys.stdin)[0]['ID'])")
+          echo "Monitoring deployment $deploy_id"
+          for i in $(seq 1 60); do
+            status=$(nomad deployment status -json "$deploy_id" | python3 -c "import json,sys; print(json.load(sys.stdin)['Status'])")
+            echo "[$i] status: $status"
+            case "$status" in
+              successful) exit 0 ;;
+              failed|cancelled) nomad deployment status "$deploy_id"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "Timed out waiting for deployment"; nomad deployment status "$deploy_id"; exit 1

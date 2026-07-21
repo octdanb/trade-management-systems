@@ -69,3 +69,7 @@ and `cd frontend && npm run dev` work standalone.
 Push a branch named `release/X.Y.Z` → CI tags images `X.Y.Z`, creates git tag
 `vX.Y.Z`, and publishes a GitHub Release. Every branch push already publishes
 images tagged with the branch name + SHA to GHCR.
+
+Publishing a release triggers the `Deploy` workflow, which ships that version
+to the Nomad server (Traefik-routed; see `deploy/README.md` and the `deploy`
+skill). Manual deploys: Actions → Deploy → Run workflow.
