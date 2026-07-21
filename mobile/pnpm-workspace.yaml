@@ -1,2 +1,7 @@
+# React Native tooling (babel preset chains, metro workers) resolves many
+# packages by bare name from contexts pnpm's isolated layout can't serve —
+# use the npm-style hoisted layout, as recommended for RN + pnpm.
+nodeLinker: hoisted
+
 allowBuilds:
   es5-ext: false
